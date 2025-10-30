@@ -1,0 +1,30 @@
+[project]
+name = "king-james-bible-data-analysis"
+version = "0.1.0"
+description = "Analysis of King James Bible"
+readme = "README.md"
+requires-python = ">=3.10, <3.12"
+authors = [{ name = "Richard Mužík", email = "richard@imuzik.cz" }]
+dependencies = [
+    "ipykernel>=6.30.1",
+    "ipywidgets>=8.1.7",
+    "matplotlib>=3.10.0",
+    "nbclient>=0.10.2",
+    "nbconvert>=7.16.6",
+    "nbformat>=5.10.4",
+    "notebook>=7.4.7",
+    "numpy>=2.1.3",
+    "pandas>=2.3.3",
+    "plotly>=6.3.1",
+    "plotnine>=0.15.0",
+    "pretty-jupyter>=2.0.4",
+    "profiplots[plotnine]>=3.0.5",
+    "pyyaml>=6.0.3",
+    "scikit-learn>=1.7.2",
+    "scipy>=1.15.3",
+    "seaborn>=0.13.2",
+    "setuptools>=80.9.0",
+    "ydata-profiling>=4.17.0",
+]
+
+

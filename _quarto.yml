@@ -1,0 +1,23 @@
+project:
+  title: "mff-ds"
+
+from: markdown+emoji
+format:
+  revealjs: 
+    incremental: false
+    embed-resources: true
+    lang: en
+    code-line-numbers: true
+    highlight-style: github
+    slide-number: true 
+    smaller: true
+    callout-icon: false
+    html-math-method: katex
+    css: styles.css
+
+execute:
+  echo: false
+  warning: false
+  notebook: false
+  cache: false
+  engine: jupyter

@@ -209,3 +209,4 @@ __marimo__/
 /.quarto/
 **/*.quarto_ipynb
 report/*.html
+data/bible.txt

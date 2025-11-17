@@ -115,6 +115,11 @@ book_stats
 
 :::
 
+As we can see from the histogram above, some books have significantly more verses than others.
+For example, Psalms has the highest number of verses, while books like Obadiah and Philemon have very few verses.
+
+Another thing that can be observed is that first half of the dataset (that should also correspond to Old Testament) has generally more verses per book compared to the second half (New Testament).
+
 ## První vizualizace
 
 ```{python}

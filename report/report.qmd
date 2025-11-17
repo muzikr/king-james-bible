@@ -1,25 +1,237 @@
 ---
-title: "Ukázkový report"
+title: "Classification of verses into Testaments based on King James Bible"
 author: "[Richard Mužík](mailto:richard@imuzik.cz)"
 abstract: "Můj ukázkový abstrakt"
 abstract-title: "Toto je abstrakt"
 editor:
     render-on-save: true
+execute:
+    cache: true
 date: today
 format:
     html:
         toc: true
         embed-resources: true
         echo: true
+        code-fold: true
+        code-tools: true
+        code-summary: "Show the code"
 ---
+
+# Introduction
+
+In this project we will explore the Bible, specifically King James Bible, in terms of data analysis.
+
+## Goals and motivations
+
+The main goal of this work is to create a classifier, that would take a verse and classify it to corresponding Testament respectively.
 
 # Data
 
-## Načtení dat
+The King James Bible dataset contains full text of the Bible in the following format `Book Chapter:Verse    Text`:
+
+- Book - name of the book where the verse can be found
+- Chapter - chapter number
+- Verse - verse number
+- Text - text of the verse
 
 ```{python}
-print("Hello, World!")
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+
+bible_df = pd.read_csv(
+    "../data/bible.txt",
+    sep="\t",
+    header=None,
+    names=["ref", "text"],
+    engine="python",
+)
+parts = bible_df["ref"].str.extract(
+    r"^(?P<book>.+?)\s+(?P<chapter>\d+):(?P<verse>\d+)$"
+)
+
+bible_df = pd.concat([parts, bible_df["text"]], axis=1)
+bible_df.head()
 ```
+
+Now let's check if we have all data and if there are any duplicates:
+
+```{python}
+print(f"Total number of lines (verses): {len(bible_df)}")
+print(f"Number of duplicate lines: {bible_df.duplicated().sum()}")
+print(f"Number of unique books: {bible_df['book'].nunique()}")
+print(f"Number of chapters: {bible_df.groupby(['book', 'chapter']).ngroups}")
+print(f"Number of missing values:\n{bible_df.isna().sum()}")
+```
+
+As we can see, there are no duplicates and no missing values in our dataset.
+I also managed to find \[[1](https://kingjamesbibledictionary.com/BibleFacts)\]\[[2](https://blackletterkingjamesbible.com/Library/BibleStatistics)\] that the King James Bible contains:
+
+:::{.column-margin}
+\[1\]: [https://kingjamesbibledictionary.com/BibleFacts](https://kingjamesbibledictionary.com/BibleFacts)
+
+\[2\]: [https://blackletterkingjamesbible.com/Library/BibleStatistics](https://blackletterkingjamesbible.com/Library/BibleStatistics)
+:::
+
+- 66 books
+- 1,189 chapters
+- 31,102 verses
+
+And indeed, our dataset contains exactly the same numbers.
+
+:::{.panel-tabset}
+
+## Plot
+
+```{python}
+plt.figure(figsize=(15, 7))
+sns.histplot(
+    data=bible_df,
+    x="book",
+    hue="chapter",
+    multiple="stack",
+    palette="tab20",
+    discrete=True,
+    legend=False,
+)
+plt.xticks(rotation=90)
+plt.title("Number of verses per book divided into chapters")
+plt.xlabel("Book")
+plt.ylabel("Number of verses")
+plt.show()
+```
+
+## Data
+
+```{python}
+book_stats = bible_df.groupby("book").agg(
+    num_chapters=("chapter", "nunique"),
+    num_verses=("verse", "count"),
+).reset_index()
+book_stats
+```
+
+:::
+
+As we can see from the histogram above, some books have significantly more verses than others.
+For example, Psalms has the highest number of verses, while books like Obadiah and Philemon have very few verses.
+
+Another thing that can be observed is that first half of the dataset (that should also correspond to Old Testament) has generally more verses per book compared to the second half (New Testament).
+
+Let's now add a new column indicating whether the verse belongs to Old or New Testament.
+
+```{python}
+def assign_testament(book):
+    old_testament_books = [
+        # Historical books
+        "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther",
+        # Poetic books
+        "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon",
+        # Prophetic books
+        "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi"
+    ]
+
+    new_testament_books = [
+        # Gospels:
+        "Matthew", "Mark", "Luke", "John",
+        # Historical:
+        "Acts",
+        # Epistles:
+        "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude",
+        # The Revelation:
+        "Revelation"
+    ]
+
+    if book in old_testament_books:
+        return "Old Testament"
+    elif book in new_testament_books:
+        return "New Testament"
+    else:
+        return "Unknown"
+
+bible_df["testament"] = bible_df["book"].apply(assign_testament)
+bible_df.head()
+```
+
+Let's now check that we really have just Bible books:
+
+```{python}
+print(f"Unknown testaments present: {(bible_df['testament'] == 'Unknown').sum()}")
+```
+
+:::{.panel-tabset}
+## Bible
+
+## Old Testament
+
+```{python}
+old_testament_df = bible_df[bible_df["testament"] == "Old Testament"]
+old_testament_df.head()
+```
+
+```{python}
+print(f"Number of verses in Old Testament: {len(old_testament_df)}")
+print(f"Number of books in Old Testament: {old_testament_df['book'].nunique()}")
+print(f"Number of chapters in Old Testament: {old_testament_df.groupby(['book', 'chapter']).ngroups}")
+```
+
+```{python}
+book_lengths = old_testament_df.groupby('book').size()
+print(f"Longest book in Old Testament: {book_lengths.idxmax()} ({book_lengths.max()} verses)")
+print(f"Shortest book in Old Testament: {book_lengths.idxmin()} ({book_lengths.min()} verses)")
+```
+
+```{python}
+average_verses_per_book = book_lengths.mean()
+print(f"Average number of verses per book in Old Testament: {average_verses_per_book:.2f}")
+```
+
+:::{.panel-tabset}
+## Plot
+```{python}
+top_words_ot = pd.Series(
+    ' '.join(old_testament_df['text']).lower().split()
+).value_counts().head(20)
+
+plt.figure(figsize=(12, 6))
+sns.barplot(
+    x=top_words_ot.index,
+    y=top_words_ot.values,
+    palette="viridis"
+)
+plt.xticks(rotation=90)
+plt.title("Top 20 most common words in Old Testament")
+plt.xlabel("Words")
+plt.ylabel("Frequency")
+plt.show()
+```
+
+## Data
+```{python}
+print("Top 20 most common words in Old Testament")
+print(top_words_ot)
+```
+:::
+
+```{python}
+# Create wordcloud for Old Testament
+wordcloud_ot = WordCloud(width=800, height=400, background_color='white').generate(' '.join(old_testament_df['text']).lower())
+plt.figure(figsize=(15, 7.5))
+plt.imshow(wordcloud_ot, interpolation='bilinear')
+plt.axis('off')
+plt.title("Word Cloud for Old Testament")
+plt.show()
+```
+
+## New Testament
+:::
+
+"""
+TODO:
+- average number of verses per book in each testament
+"""
 
 ## První vizualizace
 

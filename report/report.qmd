@@ -163,6 +163,49 @@ print(f"Unknown testaments present: {(bible_df['testament'] == 'Unknown').sum()}
 
 :::{.panel-tabset}
 ## Bible
+```{python}
+def basic_verses_chapters_books_stats(df, testament_name):
+    print(f"Number of verses in {testament_name}: {len(df)}")
+    print(f"Number of books in {testament_name}: {df['book'].nunique()}")
+    print(f"Number of chapters in {testament_name}: {df.groupby(['book', 'chapter']).ngroups}")
+
+def longest_shortest_books(df, testament_name):
+    book_lengths = df.groupby('book').size()
+    print(f"Longest book in {testament_name}: {book_lengths.idxmax()} ({book_lengths.max()} verses)")
+    print(f"Shortest book in {testament_name}: {book_lengths.idxmin()} ({book_lengths.min()} verses)")
+
+def average_verses_per_book(df, testament_name):
+    book_lengths = df.groupby('book').size()
+    average_verses = book_lengths.mean()
+    print(f"Average number of verses per book in {testament_name}: {average_verses:.2f}")
+
+def plot_top_words(df, testament_name, number_of_words=20):
+    top_words = pd.Series(
+        ' '.join(df['text']).lower().split()
+    ).value_counts().head(number_of_words)
+
+    plt.figure(figsize=(12, 6))
+    sns.barplot(
+        x=top_words.index,
+        y=top_words.values,
+        palette="viridis"
+    )
+    plt.xticks(rotation=90)
+    plt.title(f"Top 20 most common words in {testament_name}")
+    plt.xlabel("Words")
+    plt.ylabel("Frequency")
+    plt.show()
+    return top_words
+
+def plot_wordcloud(df, testament_name):
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(df['text']).lower())
+    plt.figure(figsize=(15, 7.5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.title(f"Word Cloud for {testament_name}")
+    plt.show()
+```
+
 
 ## Old Testament
 
@@ -172,40 +215,21 @@ old_testament_df.head()
 ```
 
 ```{python}
-print(f"Number of verses in Old Testament: {len(old_testament_df)}")
-print(f"Number of books in Old Testament: {old_testament_df['book'].nunique()}")
-print(f"Number of chapters in Old Testament: {old_testament_df.groupby(['book', 'chapter']).ngroups}")
+basic_verses_chapters_books_stats(old_testament_df, "Old Testament")
 ```
 
 ```{python}
-book_lengths = old_testament_df.groupby('book').size()
-print(f"Longest book in Old Testament: {book_lengths.idxmax()} ({book_lengths.max()} verses)")
-print(f"Shortest book in Old Testament: {book_lengths.idxmin()} ({book_lengths.min()} verses)")
+longest_shortest_books(old_testament_df, "Old Testament")
 ```
 
 ```{python}
-average_verses_per_book = book_lengths.mean()
-print(f"Average number of verses per book in Old Testament: {average_verses_per_book:.2f}")
+average_verses_per_book(old_testament_df, "Old Testament")
 ```
 
 :::{.panel-tabset}
 ## Plot
 ```{python}
-top_words_ot = pd.Series(
-    ' '.join(old_testament_df['text']).lower().split()
-).value_counts().head(20)
-
-plt.figure(figsize=(12, 6))
-sns.barplot(
-    x=top_words_ot.index,
-    y=top_words_ot.values,
-    palette="viridis"
-)
-plt.xticks(rotation=90)
-plt.title("Top 20 most common words in Old Testament")
-plt.xlabel("Words")
-plt.ylabel("Frequency")
-plt.show()
+top_words_ot = plot_top_words(old_testament_df, "Old Testament")
 ```
 
 ## Data
@@ -216,13 +240,7 @@ print(top_words_ot)
 :::
 
 ```{python}
-# Create wordcloud for Old Testament
-wordcloud_ot = WordCloud(width=800, height=400, background_color='white').generate(' '.join(old_testament_df['text']).lower())
-plt.figure(figsize=(15, 7.5))
-plt.imshow(wordcloud_ot, interpolation='bilinear')
-plt.axis('off')
-plt.title("Word Cloud for Old Testament")
-plt.show()
+plot_wordcloud(old_testament_df, "Old Testament")
 ```
 
 ## New Testament

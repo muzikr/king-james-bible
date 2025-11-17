@@ -56,6 +56,13 @@ bible_df = pd.concat([parts, bible_df["text"]], axis=1)
 bible_df.head()
 ```
 
+```{python}
+print(f"Total number of lines (verses): {len(bible_df)}")
+print(f"Number of duplicate lines: {bible_df.duplicated().sum()}")
+print(f"Number of unique books: {bible_df['book'].nunique()}")
+print(f"Number of chapters: {bible_df.groupby(['book', 'chapter']).ngroups}")
+print(f"Number of missing values:\n{bible_df.isna().sum()}")
+```
 ## První vizualizace
 
 ```{python}

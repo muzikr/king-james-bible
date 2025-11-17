@@ -56,6 +56,8 @@ bible_df = pd.concat([parts, bible_df["text"]], axis=1)
 bible_df.head()
 ```
 
+Now let's check if we have all data and if there are any duplicates:
+
 ```{python}
 print(f"Total number of lines (verses): {len(bible_df)}")
 print(f"Number of duplicate lines: {bible_df.duplicated().sum()}")
@@ -63,6 +65,22 @@ print(f"Number of unique books: {bible_df['book'].nunique()}")
 print(f"Number of chapters: {bible_df.groupby(['book', 'chapter']).ngroups}")
 print(f"Number of missing values:\n{bible_df.isna().sum()}")
 ```
+
+As we can see, there are no duplicates and no missing values in our dataset.
+I also managed to find \[[1](https://kingjamesbibledictionary.com/BibleFacts)\]\[[2](https://blackletterkingjamesbible.com/Library/BibleStatistics)\] that the King James Bible contains:
+
+:::{.column-margin}
+\[1\]: [https://kingjamesbibledictionary.com/BibleFacts](https://kingjamesbibledictionary.com/BibleFacts)
+
+\[2\]: [https://blackletterkingjamesbible.com/Library/BibleStatistics](https://blackletterkingjamesbible.com/Library/BibleStatistics)
+:::
+
+- 66 books
+- 1,189 chapters
+- 31,102 verses
+
+And indeed, our dataset contains exactly the same numbers.
+
 ## První vizualizace
 
 ```{python}

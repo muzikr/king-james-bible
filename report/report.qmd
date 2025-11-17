@@ -81,6 +81,24 @@ I also managed to find \[[1](https://kingjamesbibledictionary.com/BibleFacts)\]\
 
 And indeed, our dataset contains exactly the same numbers.
 
+```{python}
+plt.figure(figsize=(15, 7))
+sns.histplot(
+    data=bible_df,
+    x="book",
+    hue="chapter",
+    multiple="stack",
+    palette="tab20",
+    discrete=True,
+    legend=False,
+)
+plt.xticks(rotation=90)
+plt.title("Number of verses per book divided into chapters")
+plt.xlabel("Book")
+plt.ylabel("Number of verses")
+plt.show()
+```
+
 ## První vizualizace
 
 ```{python}

@@ -206,6 +206,39 @@ def plot_wordcloud(df, testament_name):
     plt.show()
 ```
 
+```{python}
+bible_df.head()
+```
+
+```{python}
+basic_verses_chapters_books_stats(bible_df, "Bible")
+```
+
+```{python}
+longest_shortest_books(bible_df, "Bible")
+```
+
+```{python}
+average_verses_per_book(bible_df, "Bible")
+```
+
+:::{.panel-tabset}
+## Plot
+```{python}
+top_words_bible = plot_top_words(bible_df, "Bible")
+```
+
+## Data
+```{python}
+print("Top 20 most common words in Bible")
+print(top_words_bible)
+```
+:::
+
+```{python}
+plot_wordcloud(bible_df, "Bible")
+```
+
 
 ## Old Testament
 

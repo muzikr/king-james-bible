@@ -177,6 +177,12 @@ print(f"Number of books in Old Testament: {old_testament_df['book'].nunique()}")
 print(f"Number of chapters in Old Testament: {old_testament_df.groupby(['book', 'chapter']).ngroups}")
 ```
 
+```{python}
+book_lengths = old_testament_df.groupby('book').size()
+print(f"Longest book in Old Testament: {book_lengths.idxmax()} ({book_lengths.max()} verses)")
+print(f"Shortest book in Old Testament: {book_lengths.idxmin()} ({book_lengths.min()} verses)")
+```
+
 ## New Testament
 :::
 

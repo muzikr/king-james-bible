@@ -36,7 +36,24 @@ The King James Bible dataset contains full text of the Bible in the following fo
 - Text - text of the verse
 
 ```{python}
-print("Hello, World!")
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+
+bible_df = pd.read_csv(
+    "../data/bible.txt",
+    sep="\t",
+    header=None,
+    names=["ref", "text"],
+    engine="python",
+)
+parts = bible_df["ref"].str.extract(
+    r"^(?P<book>.+?)\s+(?P<chapter>\d+):(?P<verse>\d+)$"
+)
+
+bible_df = pd.concat([parts, bible_df["text"]], axis=1)
+bible_df.head()
 ```
 
 ## První vizualizace

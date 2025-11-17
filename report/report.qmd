@@ -206,6 +206,10 @@ plt.ylabel("Frequency")
 plt.show()
 ```
 
+```{python}
+print("Top 20 most common words in Old Testament")
+print(top_words_ot)
+```
 ## New Testament
 :::
 

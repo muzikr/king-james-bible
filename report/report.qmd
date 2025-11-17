@@ -99,6 +99,15 @@ plt.ylabel("Number of verses")
 plt.show()
 ```
 
+
+```{python}
+book_stats = bible_df.groupby("book").agg(
+    num_chapters=("chapter", "nunique"),
+    num_verses=("verse", "count"),
+).reset_index()
+book_stats
+```
+
 ## První vizualizace
 
 ```{python}

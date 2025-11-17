@@ -210,3 +210,5 @@ __marimo__/
 **/*.quarto_ipynb
 report/*.html
 data/bible.txt
+
+report/.jupyter_cache

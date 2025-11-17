@@ -183,6 +183,11 @@ print(f"Longest book in Old Testament: {book_lengths.idxmax()} ({book_lengths.ma
 print(f"Shortest book in Old Testament: {book_lengths.idxmin()} ({book_lengths.min()} verses)")
 ```
 
+```{python}
+average_verses_per_book = book_lengths.mean()
+print(f"Average number of verses per book in Old Testament: {average_verses_per_book:.2f}")
+```
+
 ## New Testament
 :::
 

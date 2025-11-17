@@ -155,6 +155,10 @@ bible_df["testament"] = bible_df["book"].apply(assign_testament)
 bible_df.head()
 ```
 
+```{python}
+print(f"Unknown testaments present: {(bible_df['testament'] == 'Unknown').sum()}")
+```
+
 ## První vizualizace
 
 ```{python}

@@ -81,6 +81,10 @@ I also managed to find \[[1](https://kingjamesbibledictionary.com/BibleFacts)\]\
 
 And indeed, our dataset contains exactly the same numbers.
 
+:::{.panel-tabset}
+
+## Plot
+
 ```{python}
 plt.figure(figsize=(15, 7))
 sns.histplot(
@@ -99,6 +103,7 @@ plt.ylabel("Number of verses")
 plt.show()
 ```
 
+## Data
 
 ```{python}
 book_stats = bible_df.groupby("book").agg(
@@ -107,6 +112,8 @@ book_stats = bible_df.groupby("book").agg(
 ).reset_index()
 book_stats
 ```
+
+:::
 
 ## První vizualizace
 

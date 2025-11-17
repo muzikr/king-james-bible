@@ -161,6 +161,14 @@ Let's now check that we really have just Bible books:
 print(f"Unknown testaments present: {(bible_df['testament'] == 'Unknown').sum()}")
 ```
 
+:::{.panel-tabset}
+## Bible
+
+## Old Testament
+
+## New Testament
+:::
+
 ## První vizualizace
 
 ```{python}

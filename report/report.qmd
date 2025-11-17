@@ -188,6 +188,24 @@ average_verses_per_book = book_lengths.mean()
 print(f"Average number of verses per book in Old Testament: {average_verses_per_book:.2f}")
 ```
 
+```{python}
+top_words_ot = pd.Series(
+    ' '.join(old_testament_df['text']).lower().split()
+).value_counts().head(20)
+
+plt.figure(figsize=(12, 6))
+sns.barplot(
+    x=top_words_ot.index,
+    y=top_words_ot.values,
+    palette="viridis"
+)
+plt.xticks(rotation=90)
+plt.title("Top 20 most common words in Old Testament")
+plt.xlabel("Words")
+plt.ylabel("Frequency")
+plt.show()
+```
+
 ## New Testament
 :::
 

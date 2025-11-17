@@ -8,6 +8,7 @@ authors = [{ name = "Richard Mužík", email = "richard@imuzik.cz" }]
 dependencies = [
     "ipykernel>=6.30.1",
     "ipywidgets>=8.1.7",
+    "jupyter-cache>=1.0.1",
     "matplotlib>=3.10.0",
     "nbclient>=0.10.2",
     "nbconvert>=7.16.6",

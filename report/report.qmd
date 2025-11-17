@@ -166,6 +166,11 @@ print(f"Unknown testaments present: {(bible_df['testament'] == 'Unknown').sum()}
 
 ## Old Testament
 
+```{python}
+old_testament_df = bible_df[bible_df["testament"] == "Old Testament"]
+old_testament_df.head()
+```
+
 ## New Testament
 :::
 

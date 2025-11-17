@@ -5,12 +5,17 @@ abstract: "Můj ukázkový abstrakt"
 abstract-title: "Toto je abstrakt"
 editor:
     render-on-save: true
+execute:
+    cache: true
 date: today
 format:
     html:
         toc: true
         embed-resources: true
         echo: true
+        code-fold: true
+        code-tools: true
+        code-summary: "Show the code"
 ---
 
 # Data

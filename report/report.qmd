@@ -244,6 +244,41 @@ plot_wordcloud(old_testament_df, "Old Testament")
 ```
 
 ## New Testament
+
+```{python}
+new_testament_df = bible_df[bible_df["testament"] == "New Testament"]
+new_testament_df.head()
+```
+
+```{python}
+basic_verses_chapters_books_stats(new_testament_df, "New Testament")
+```
+
+```{python}
+longest_shortest_books(new_testament_df, "New Testament")
+```
+
+```{python}
+average_verses_per_book(new_testament_df, "New Testament")
+```
+
+:::{.panel-tabset}
+## Plot
+```{python}
+top_words_nt = plot_top_words(new_testament_df, "New Testament")
+```
+
+## Data
+```{python}
+print("Top 20 most common words in New Testament")
+print(top_words_nt)
+```
+:::
+
+```{python}
+plot_wordcloud(new_testament_df, "New Testament")
+```
+
 :::
 
 ## První vizualizace

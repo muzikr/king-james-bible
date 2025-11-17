@@ -171,6 +171,12 @@ old_testament_df = bible_df[bible_df["testament"] == "Old Testament"]
 old_testament_df.head()
 ```
 
+```{python}
+print(f"Number of verses in Old Testament: {len(old_testament_df)}")
+print(f"Number of books in Old Testament: {old_testament_df['book'].nunique()}")
+print(f"Number of chapters in Old Testament: {old_testament_df.groupby(['book', 'chapter']).ngroups}")
+```
+
 ## New Testament
 :::
 

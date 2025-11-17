@@ -28,7 +28,12 @@ The main goal of this work is to create a classifier, that would take a verse an
 
 # Data
 
-## Načtení dat
+The King James Bible dataset contains full text of the Bible in the following format `Book Chapter:Verse    Text`:
+
+- Book - name of the book where the verse can be found
+- Chapter - chapter number
+- Verse - verse number
+- Text - text of the verse
 
 ```{python}
 print("Hello, World!")

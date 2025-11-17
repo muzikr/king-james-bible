@@ -18,6 +18,14 @@ format:
         code-summary: "Show the code"
 ---
 
+# Introduction
+
+In this project we will explore the Bible, specifically King James Bible, in terms of data analysis.
+
+## Goals and motivations
+
+The main goal of this work is to create a classifier, that would take a verse and classify it to corresponding Testament respectively.
+
 # Data
 
 ## Načtení dat

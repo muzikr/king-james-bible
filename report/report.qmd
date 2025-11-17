@@ -120,6 +120,39 @@ For example, Psalms has the highest number of verses, while books like Obadiah a
 
 Another thing that can be observed is that first half of the dataset (that should also correspond to Old Testament) has generally more verses per book compared to the second half (New Testament).
 
+```{python}
+def assign_testament(book):
+    old_testament_books = [
+        # Historical books
+        "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther",
+        # Poetic books
+        "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon",
+        # Prophetic books
+        "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi"
+    ]
+
+    new_testament_books = [
+        # Gospels:
+        "Matthew", "Mark", "Luke", "John",
+        # Historical:
+        "Acts",
+        # Epistles:
+        "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude",
+        # The Revelation:
+        "Revelation"
+    ]
+
+    if book in old_testament_books:
+        return "Old Testament"
+    elif book in new_testament_books:
+        return "New Testament"
+    else:
+        return "Unknown"
+
+bible_df["testament"] = bible_df["book"].apply(assign_testament)
+bible_df.head()
+```
+
 ## První vizualizace
 
 ```{python}

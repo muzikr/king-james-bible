@@ -215,6 +215,16 @@ print(top_words_ot)
 ```
 :::
 
+```{python}
+# Create wordcloud for Old Testament
+wordcloud_ot = WordCloud(width=800, height=400, background_color='white').generate(' '.join(old_testament_df['text']).lower())
+plt.figure(figsize=(15, 7.5))
+plt.imshow(wordcloud_ot, interpolation='bilinear')
+plt.axis('off')
+plt.title("Word Cloud for Old Testament")
+plt.show()
+```
+
 ## New Testament
 :::
 

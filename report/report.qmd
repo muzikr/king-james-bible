@@ -120,6 +120,8 @@ For example, Psalms has the highest number of verses, while books like Obadiah a
 
 Another thing that can be observed is that first half of the dataset (that should also correspond to Old Testament) has generally more verses per book compared to the second half (New Testament).
 
+Let's now add a new column indicating whether the verse belongs to Old or New Testament.
+
 ```{python}
 def assign_testament(book):
     old_testament_books = [

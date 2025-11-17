@@ -1,5 +1,5 @@
 ---
-title: "Ukázkový report"
+title: "Classification of verses into Testaments based on King James Bible"
 author: "[Richard Mužík](mailto:richard@imuzik.cz)"
 abstract: "Můj ukázkový abstrakt"
 abstract-title: "Toto je abstrakt"

@@ -399,14 +399,37 @@ bible_df["cleaned_text"] = bible_df["text"].apply(clean_text)
 bible_df.head()
 ```
 
-## Závěr
+```{python}
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, accuracy_score
 
-:::{.column-margin}
+X_train, X_test, y_train, y_test = train_test_split(
+    bible_df["cleaned_text"],
+    bible_df["testament"],
+    test_size=0.2,
+    stratify=bible_df["testament"],
+    random_state=42
+)
 
-Toto je text
+tfidf = TfidfVectorizer(
+    ngram_range=(1,2),
+    analyzer="word",
+    min_df=3,
+    max_features=50000
+)
 
-:::
+X_train_tfidf = tfidf.fit_transform(X_train)
+X_test_tfidf  = tfidf.transform(X_test)
 
+clf = LogisticRegression(max_iter=500)
+clf.fit(X_train_tfidf, y_train)
+
+pred = clf.predict(X_test_tfidf)
+print("Accuracy:", accuracy_score(y_test, pred))
+print(classification_report(y_test, pred))
+```
 
 :::{.panel-tabset}
 

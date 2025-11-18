@@ -500,3 +500,29 @@ plt.tight_layout()
 plt.show()
 ```
 
+```{python}
+from sklearn.metrics import roc_curve, auc
+from sklearn.preprocessing import label_binarize
+
+# Convert labels to binary (Old = 0, New = 1)
+y_bin = label_binarize(y_test, classes=["Old Testament", "New Testament"]).ravel()
+
+idx = list(clf.classes_).index("New Testament")
+
+# Predict probabilities for the New Testament
+y_prob = clf.predict_proba(X_test_tfidf)[:, idx]
+
+fpr, tpr, _ = roc_curve(y_bin, y_prob)
+roc_auc = auc(fpr, tpr)
+
+plt.figure(figsize=(8, 8))
+plt.plot(fpr, tpr, linewidth=2, label=f"AUC = {roc_auc:.3f}")
+plt.plot([0, 1], [0, 1], linestyle="--")
+plt.title("ROC Curve")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+

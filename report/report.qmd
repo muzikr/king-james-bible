@@ -397,6 +397,9 @@ plot_wordcloud(new_testament_df, "New Testament")
 
 :::
 
+### Comparison of Testaments
+
+
 # Modeling
 
 ```{python}

@@ -387,8 +387,16 @@ plot_wordcloud(new_testament_df, "New Testament")
 # Modeling
 
 ```{python}
+import re
 
-print("Hello here too!")
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r"[^a-z\s]", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+bible_df["cleaned_text"] = bible_df["text"].apply(clean_text)
+bible_df.head()
 ```
 
 ## Závěr

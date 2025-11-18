@@ -166,6 +166,11 @@ print(f"Unknown testaments present: {(bible_df['testament'] == 'Unknown').sum()}
 
 ### Analysis per Testament
 
+Here we will look at some basic statistics and visualizations for the New and Old Testament.
+We will look again at number of verses, chapters and book, but additionally look also at the text itself.
+For completeness we also include the statistics for the the whole Bible for completeness.
+To maintain consistency we hence also printed all the statistics for the whole Bible even though some of them are repeated from the previous sections.
+
 :::{.panel-tabset}
 ## Bible
 ```{python}

@@ -432,11 +432,43 @@ print(classification_report(y_test, pred))
 ```
 
 :::{.panel-tabset}
+## Plot
 
-## Muži
+```{python}
+import numpy as np
 
-## Ženy
+feature_names = tfidf.get_feature_names_out()
+coef = clf.coef_[0]
 
-## Ostatní
+top_new = np.argsort(coef)[-20:]
+top_old = np.argsort(coef)[:20]
+
+top_features = np.concatenate([top_old, top_new])
+top_values = coef[top_features]
+top_labels = feature_names[top_features]
+
+plt.figure(figsize=(8, 8))
+positions = np.arange(len(top_features))
+plt.barh(positions, top_values)
+plt.yticks(positions, top_labels)
+plt.title("Top 15 Discriminative Words (Old vs New Testament)")
+plt.xlabel("Coefficient Value")
+plt.tight_layout()
+plt.show()
+```
+
+## Data
+
+```{python}
+print("New Testament:")
+for i in reversed(top_new):
+    print(f"{feature_names[i]}: {coef[i]:.4f}")
+
+print("\nOld Testament:")
+for i in top_old:
+    print(f"{feature_names[i]}: {coef[i]:.4f}")
+```
 
 :::
+
+

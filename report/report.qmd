@@ -472,3 +472,31 @@ for i in top_old:
 :::
 
 
+```{python}
+from sklearn.metrics import confusion_matrix
+
+labels = clf.classes_
+
+cm = confusion_matrix(y_test, pred, labels=labels)
+
+fig, ax = plt.subplots(figsize=(8, 8))
+cax = ax.imshow(cm, interpolation="nearest")
+plt.title("Confusion Matrix")
+plt.colorbar(cax)
+
+ax.set_xticks(np.arange(len(labels)))
+ax.set_yticks(np.arange(len(labels)))
+ax.set_xticklabels(labels)
+ax.set_yticklabels(labels)
+
+# Print numbers on matrix
+for i in range(len(labels)):
+    for j in range(len(labels)):
+        ax.text(j, i, cm[i, j], ha="center", va="center")
+
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.tight_layout()
+plt.show()
+```
+

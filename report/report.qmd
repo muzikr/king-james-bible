@@ -89,10 +89,10 @@ And indeed, our dataset contains exactly the same numbers.
 ## Plot
 
 ```{python}
-plt.figure(figsize=(15, 7))
+plt.figure(figsize=(8, 12))
 sns.histplot(
     data=bible_df,
-    x="book",
+    y="book",
     hue="chapter",
     multiple="stack",
     palette="tab20",
@@ -101,8 +101,8 @@ sns.histplot(
 )
 plt.xticks(rotation=90)
 plt.title("Number of verses per book divided into chapters")
-plt.xlabel("Book")
-plt.ylabel("Number of verses")
+plt.ylabel("Book")
+plt.xlabel("Number of verses")
 plt.show()
 ```
 

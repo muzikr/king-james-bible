@@ -189,6 +189,11 @@ def average_verses_per_book(df, testament_name):
     average_verses = book_lengths.mean()
     print(f"Average number of verses per book in {testament_name}: {average_verses:.2f}")
 
+def average_words_per_verse(df, testament_name):
+    df['word_count'] = df['text'].apply(lambda x: len(x.split()))
+    average_words = df['word_count'].mean()
+    print(f"Average number of words per verse in {testament_name}: {average_words:.2f}")
+
 def plot_top_words(df, testament_name, number_of_words=20):
     top_words = pd.Series(
         ' '.join(df['text']).lower().split()
@@ -256,6 +261,7 @@ longest_shortest_books(bible_df, "Bible")
 
 ```{python}
 average_verses_per_book(bible_df, "Bible")
+average_words_per_verse(bible_df, "Bible")
 ```
 
 :::{.panel-tabset}
@@ -306,6 +312,7 @@ longest_shortest_books(old_testament_df, "Old Testament")
 
 ```{python}
 average_verses_per_book(old_testament_df, "Old Testament")
+average_words_per_verse(old_testament_df, "Old Testament")
 ```
 
 :::{.panel-tabset}
@@ -355,6 +362,7 @@ longest_shortest_books(new_testament_df, "New Testament")
 
 ```{python}
 average_verses_per_book(new_testament_df, "New Testament")
+average_words_per_verse(new_testament_df, "New Testament")
 ```
 
 :::{.panel-tabset}

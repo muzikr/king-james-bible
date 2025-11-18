@@ -39,7 +39,6 @@ The King James Bible dataset contains full text of the Bible in the following fo
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from wordcloud import WordCloud
 
 bible_df = pd.read_csv(
     "../data/bible.txt",
@@ -196,6 +195,8 @@ def plot_top_words(df, testament_name, number_of_words=20):
     plt.ylabel("Frequency")
     plt.show()
     return top_words
+
+from wordcloud import WordCloud
 
 def plot_wordcloud(df, testament_name):
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(df['text']).lower())

@@ -55,6 +55,8 @@ bible_df = pd.concat([parts, bible_df["text"]], axis=1)
 bible_df.head()
 ```
 
+## Data Quality Check
+
 Now let's check if we have all data and if there are any duplicates:
 
 ```{python}
@@ -79,6 +81,8 @@ I also managed to find \[[1](https://kingjamesbibledictionary.com/BibleFacts)\]\
 - 31,102 verses
 
 And indeed, our dataset contains exactly the same numbers.
+
+## Exploratory Data Analysis
 
 :::{.panel-tabset}
 
@@ -159,6 +163,8 @@ Let's now check that we really have just Bible books:
 ```{python}
 print(f"Unknown testaments present: {(bible_df['testament'] == 'Unknown').sum()}")
 ```
+
+### Analysis per Testament
 
 :::{.panel-tabset}
 ## Bible
@@ -315,7 +321,7 @@ plot_wordcloud(new_testament_df, "New Testament")
 
 :::
 
-## První vizualizace
+# Modeling
 
 ```{python}
 

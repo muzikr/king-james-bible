@@ -202,6 +202,30 @@ def plot_top_words(df, testament_name, number_of_words=20):
     plt.show()
     return top_words
 
+import nltk
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+
+def plot_top_words_filtered(df, testament_name, stopwords, number_of_words=20):
+    words = pd.Series(
+        ' '.join(df['text']).lower().split()
+    )
+    filtered_words = words[~words.isin(stopwords)]
+    top_words = filtered_words.value_counts().head(number_of_words)
+
+    plt.figure(figsize=(8, 6))
+    sns.barplot(
+        x=top_words.index,
+        y=top_words.values,
+        palette="viridis"
+    )
+    plt.xticks(rotation=90)
+    plt.title(f"Top 20 most common words in {testament_name} (filtered)")
+    plt.xlabel("Words")
+    plt.ylabel("Frequency")
+    plt.show()
+    return top_words
+
 from wordcloud import WordCloud
 
 def plot_wordcloud(df, testament_name):
@@ -242,6 +266,19 @@ print(top_words_bible)
 ```
 :::
 
+:::{.panel-tabset}
+## Plot
+```{python}
+top_words_bible_filtered = plot_top_words_filtered(bible_df, "Bible", stopwords=set(stopwords.words('english')))
+```
+
+## Data
+```{python}
+print("Top 20 most common words in Bible (filtered)")
+print(top_words_bible_filtered)
+```
+:::
+
 ```{python}
 plot_wordcloud(bible_df, "Bible")
 ```
@@ -279,6 +316,19 @@ print(top_words_ot)
 ```
 :::
 
+:::{.panel-tabset}
+## Plot
+```{python}
+top_words_ot_filtered = plot_top_words_filtered(old_testament_df, "Old Testament", stopwords=set(stopwords.words('english')))
+```
+
+## Data
+```{python}
+print("Top 20 most common words in Old Testament (filtered)")
+print(top_words_ot_filtered)
+```
+:::
+
 ```{python}
 plot_wordcloud(old_testament_df, "Old Testament")
 ```
@@ -312,6 +362,19 @@ top_words_nt = plot_top_words(new_testament_df, "New Testament")
 ```{python}
 print("Top 20 most common words in New Testament")
 print(top_words_nt)
+```
+:::
+
+:::{.panel-tabset}
+## Plot
+```{python}
+top_words_nt_filtered = plot_top_words_filtered(new_testament_df, "New Testament", stopwords=set(stopwords.words('english')))
+```
+
+## Data
+```{python}
+print("Top 20 most common words in New Testament (filtered)")
+print(top_words_nt_filtered)
 ```
 :::
 

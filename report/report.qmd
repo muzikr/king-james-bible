@@ -189,7 +189,7 @@ def plot_top_words(df, testament_name, number_of_words=20):
         ' '.join(df['text']).lower().split()
     ).value_counts().head(number_of_words)
 
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(8, 6))
     sns.barplot(
         x=top_words.index,
         y=top_words.values,
@@ -206,7 +206,7 @@ from wordcloud import WordCloud
 
 def plot_wordcloud(df, testament_name):
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(df['text']).lower())
-    plt.figure(figsize=(15, 7.5))
+    plt.figure(figsize=(10, 6))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
     plt.title(f"Word Cloud for {testament_name}")

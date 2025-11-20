@@ -210,5 +210,7 @@ __marimo__/
 **/*.quarto_ipynb
 report/*.html
 data/bible.txt
+data/stopwords.txt
+data/stopwords-big.txt
 
 report/.jupyter_cache

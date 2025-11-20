@@ -430,8 +430,21 @@ plt.show()
 ```{python}
 print("Number of verses per Testament:")
 print(verse_counts)
+```
 
 
+```{python}
+avg_words_per_verse = bible_df.groupby('testament')['cleaned_text'].apply(lambda x: x.str.split().apply(len).mean())
+plt.figure(figsize=(8, 8))
+sns.barplot(x=avg_words_per_verse.index, y=avg_words_per_verse.values, palette="pastel")
+plt.title("Average number of words per verse per Testament")
+plt.xlabel("Testament")
+plt.ylabel("Average number of words per verse")
+plt.show()
+```
+```{python}
+print("Average number of words per verse per Testament:")
+print(avg_words_per_verse)
 ```
 
 # Modeling

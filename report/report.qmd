@@ -416,12 +416,25 @@ plot_wordcloud(new_testament_df, "New Testament")
 ### Comparison of Testaments
 
 
-# Modeling
 
 ```{python}
+# barplot of number of verses per Testament
+verse_counts = bible_df['testament'].value_counts()
+plt.figure(figsize=(8, 8))
+sns.barplot(x=verse_counts.index, y=verse_counts.values, palette="pastel")
+plt.title("Number of verses per Testament")
+plt.xlabel("Testament")
+plt.ylabel("Number of verses")
+plt.show()
+```
+```{python}
+print("Number of verses per Testament:")
+print(verse_counts)
 
 
 ```
+
+# Modeling
 
 ```{python}
 from sklearn.model_selection import train_test_split

@@ -416,7 +416,9 @@ plot_wordcloud(new_testament_df, "New Testament")
 ### Comparison of Testaments
 
 
+:::{.panel-tabset}
 
+## Plot
 ```{python}
 # barplot of number of verses per Testament
 verse_counts = bible_df['testament'].value_counts()
@@ -427,12 +429,17 @@ plt.xlabel("Testament")
 plt.ylabel("Number of verses")
 plt.show()
 ```
+## Data
 ```{python}
 print("Number of verses per Testament:")
 print(verse_counts)
 ```
+:::
 
 
+:::{.panel-tabset}
+
+## Plot
 ```{python}
 avg_words_per_verse = bible_df.groupby('testament')['cleaned_text'].apply(lambda x: x.str.split().apply(len).mean())
 plt.figure(figsize=(8, 8))
@@ -442,10 +449,12 @@ plt.xlabel("Testament")
 plt.ylabel("Average number of words per verse")
 plt.show()
 ```
+## Data
 ```{python}
 print("Average number of words per verse per Testament:")
 print(avg_words_per_verse)
 ```
+:::
 
 # Modeling
 

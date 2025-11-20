@@ -171,6 +171,8 @@ We will look again at number of verses, chapters and book, but additionally look
 For completeness we also include the statistics for the the whole Bible for completeness.
 To maintain consistency we hence also printed all the statistics for the whole Bible even though some of them are repeated from the previous sections.
 
+Since we are going to do some word-based analysis let's clean the text a bit by removing punctuation and converting everything to lowercase.
+
 ```{python}
 import re
 

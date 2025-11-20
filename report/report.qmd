@@ -174,6 +174,11 @@ To maintain consistency we hence also printed all the statistics for the whole B
 :::{.panel-tabset}
 ## Bible
 ```{python}
+with open("../data/stopwords.txt", "r") as f:
+    stopwords = set(f.read().splitlines())
+```
+
+```{python}
 def basic_verses_chapters_books_stats(df, testament_name):
     print(f"Number of verses in {testament_name}: {len(df)}")
     print(f"Number of books in {testament_name}: {df['book'].nunique()}")
@@ -211,10 +216,6 @@ def plot_top_words(df, testament_name, number_of_words=20):
     plt.ylabel("Frequency")
     plt.show()
     return top_words
-
-import nltk
-nltk.download('stopwords')
-from nltk.corpus import stopwords
 
 def plot_top_words_filtered(df, testament_name, stopwords, number_of_words=20):
     words = pd.Series(
@@ -280,7 +281,7 @@ print(top_words_bible)
 :::{.panel-tabset}
 ## Plot
 ```{python}
-top_words_bible_filtered = plot_top_words_filtered(bible_df, "Bible", stopwords=set(stopwords.words('english')))
+top_words_bible_filtered = plot_top_words_filtered(bible_df, "Bible", stopwords=stopwords)
 ```
 
 ## Data
@@ -331,7 +332,7 @@ print(top_words_ot)
 :::{.panel-tabset}
 ## Plot
 ```{python}
-top_words_ot_filtered = plot_top_words_filtered(old_testament_df, "Old Testament", stopwords=set(stopwords.words('english')))
+top_words_ot_filtered = plot_top_words_filtered(old_testament_df, "Old Testament", stopwords=stopwords)
 ```
 
 ## Data
@@ -381,7 +382,7 @@ print(top_words_nt)
 :::{.panel-tabset}
 ## Plot
 ```{python}
-top_words_nt_filtered = plot_top_words_filtered(new_testament_df, "New Testament", stopwords=set(stopwords.words('english')))
+top_words_nt_filtered = plot_top_words_filtered(new_testament_df, "New Testament", stopwords=stopwords)
 ```
 
 ## Data
@@ -433,7 +434,8 @@ tfidf = TfidfVectorizer(
     ngram_range=(1,2),
     analyzer="word",
     min_df=3,
-    max_features=50000
+    max_features=50000,
+    #stop_words=list(stopwords)
 )
 
 X_train_tfidf = tfidf.fit_transform(X_train)

@@ -171,6 +171,19 @@ We will look again at number of verses, chapters and book, but additionally look
 For completeness we also include the statistics for the the whole Bible for completeness.
 To maintain consistency we hence also printed all the statistics for the whole Bible even though some of them are repeated from the previous sections.
 
+```{python}
+import re
+
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r"[^a-z\s]", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+bible_df["cleaned_text"] = bible_df["text"].apply(clean_text)
+bible_df.head()
+```
+
 :::{.panel-tabset}
 ## Bible
 ```{python}
@@ -195,13 +208,13 @@ def average_verses_per_book(df, testament_name):
     print(f"Average number of verses per book in {testament_name}: {average_verses:.2f}")
 
 def average_words_per_verse(df, testament_name):
-    df['word_count'] = df['text'].apply(lambda x: len(x.split()))
+    df['word_count'] = df['cleaned_text'].apply(lambda x: len(x.split()))
     average_words = df['word_count'].mean()
     print(f"Average number of words per verse in {testament_name}: {average_words:.2f}")
 
 def plot_top_words(df, testament_name, number_of_words=20):
     top_words = pd.Series(
-        ' '.join(df['text']).lower().split()
+        ' '.join(df['cleaned_text']).split()
     ).value_counts().head(number_of_words)
 
     plt.figure(figsize=(8, 6))
@@ -219,7 +232,7 @@ def plot_top_words(df, testament_name, number_of_words=20):
 
 def plot_top_words_filtered(df, testament_name, stopwords, number_of_words=20):
     words = pd.Series(
-        ' '.join(df['text']).lower().split()
+        ' '.join(df['cleaned_text']).split()
     )
     filtered_words = words[~words.isin(stopwords)]
     top_words = filtered_words.value_counts().head(number_of_words)
@@ -240,7 +253,7 @@ def plot_top_words_filtered(df, testament_name, stopwords, number_of_words=20):
 from wordcloud import WordCloud
 
 def plot_wordcloud(df, testament_name):
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(df['text']).lower())
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(df['cleaned_text']))
     plt.figure(figsize=(10, 6))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
@@ -404,16 +417,8 @@ plot_wordcloud(new_testament_df, "New Testament")
 # Modeling
 
 ```{python}
-import re
 
-def clean_text(text):
-    text = text.lower()
-    text = re.sub(r"[^a-z\s]", " ", text)
-    text = re.sub(r"\s+", " ", text).strip()
-    return text
 
-bible_df["cleaned_text"] = bible_df["text"].apply(clean_text)
-bible_df.head()
 ```
 
 ```{python}

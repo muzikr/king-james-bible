@@ -21,10 +21,8 @@ format:
 # Introduction
 
 In this project we will explore the Bible, specifically King James Bible, in terms of data analysis.
-
-## Goals and motivations
-
-The main goal of this work is to create a classifier, that would take a verse and classify it to corresponding Testament respectively.
+The main goal is to train a model, that would take an arbitrary verse from the King James Bible and classify it into either Old or New Testament.
+But before we get to the modeling part, we will first explore the data itself and see if there are any interesting patterns or insights that we can find.
 
 # Data
 

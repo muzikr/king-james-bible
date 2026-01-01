@@ -67,18 +67,18 @@ We will deal with this later during the text preprocessing step.
 
 ## Data Quality Check
 
-Now let's check if we have all data and if there are any duplicates:
+In this section we will perform a simple data quality check to ensure that our dataset is complete and does not contain any duplicates or missing values.
+Firstly, let's look at some basic statistics of the dataset:
 
 ```{python}
 print(f"Total number of lines (verses): {len(bible_df)}")
 print(f"Number of duplicate lines: {bible_df.duplicated().sum()}")
 print(f"Number of unique books: {bible_df['book'].nunique()}")
 print(f"Number of chapters: {bible_df.groupby(['book', 'chapter']).ngroups}")
-print(f"Number of missing values:\n{bible_df.isna().sum()}")
 ```
 
-As we can see, there are no duplicates and no missing values in our dataset.
-I also managed to find \[[2](https://kingjamesbibledictionary.com/BibleFacts)\]\[[3](https://blackletterkingjamesbible.com/Library/BibleStatistics)\] that the King James Bible contains:
+As we can see, there are no duplicate lines in the dataset.
+On web \[[2](https://kingjamesbibledictionary.com/BibleFacts)\]\[[3](https://blackletterkingjamesbible.com/Library/BibleStatistics)\] we managed to find the following statistics about the King James Bible:
 
 :::{.column-margin}
 \[2\]: [https://kingjamesbibledictionary.com/BibleFacts](https://kingjamesbibledictionary.com/BibleFacts)
@@ -86,11 +86,19 @@ I also managed to find \[[2](https://kingjamesbibledictionary.com/BibleFacts)\]\
 \[3\]: [https://blackletterkingjamesbible.com/Library/BibleStatistics](https://blackletterkingjamesbible.com/Library/BibleStatistics)
 :::
 
-- 66 books
-- 1,189 chapters
-- 31,102 verses
+- 66 books,
+- 1,189 chapters,
+- 31,102 verses.
 
-And indeed, our dataset contains exactly the same numbers.
+These numbers match exactly with numbers obtained from our dataset.
+Next, let's check for missing values:
+
+```{python}
+print(f"Number of missing values:\n{bible_df.isna().sum()}")
+```
+
+Luckily, there are no missing values in the dataset.
+Thus, we can conclude that our dataset is complete and ready for further analysis.
 
 ## Exploratory Data Analysis
 

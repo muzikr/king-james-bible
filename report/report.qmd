@@ -100,7 +100,15 @@ print(f"Number of missing values:\n{bible_df.isna().sum()}")
 Luckily, there are no missing values in the dataset.
 Thus, we can conclude that our dataset is complete and ready for further analysis.
 
-## Exploratory Data Analysis
+# Exploratory Data Analysis
+
+In this section we will perform some exploratory data analysis (EDA) to understand the structure and distribution of the data.
+Firstly, we are going to look at the distribution of verses, then we will do a word based analysis of the text (of Bible as whole and later per Testament).
+Finally we will compare the two Testaments based on the statistics we obtain.
+
+## Verse distribution
+
+Let's plot the distribution of verses per book divided into chapters.
 
 :::{.panel-tabset}
 
@@ -141,7 +149,16 @@ For example, Psalms has the highest number of verses, while books like Obadiah a
 
 Another thing that can be observed is that first half of the dataset (that should also correspond to Old Testament) has generally more verses per book compared to the second half (New Testament).
 
-Let's now add a new column indicating whether the verse belongs to Old or New Testament.
+## Analysis per Testament
+
+Here we will look at some basic statistics and visualizations for the New and Old Testament.
+We will look again at number of verses, chapters and book, but additionally look also at the text itself.
+For completeness we also include the statistics of the the whole Bible.
+To maintain consistency we hence also include all the statistics for the whole Bible even though some of them are repeated from the previous sections.
+
+Since we will be doing some Testament based text analysis, we need to do some preprocessing first.
+Let's add a new column with indication of Testament and clean the text for word-based analysis.
+This includes removing punctuation and converting everything to lowercase.
 
 ```{python}
 def assign_testament(book):
@@ -173,25 +190,7 @@ def assign_testament(book):
         return "Unknown"
 
 bible_df["testament"] = bible_df["book"].apply(assign_testament)
-bible_df.head()
-```
 
-Let's now check that we really have just Bible books:
-
-```{python}
-print(f"Unknown testaments present: {(bible_df['testament'] == 'Unknown').sum()}")
-```
-
-### Analysis per Testament
-
-Here we will look at some basic statistics and visualizations for the New and Old Testament.
-We will look again at number of verses, chapters and book, but additionally look also at the text itself.
-For completeness we also include the statistics for the the whole Bible for completeness.
-To maintain consistency we hence also printed all the statistics for the whole Bible even though some of them are repeated from the previous sections.
-
-Since we are going to do some word-based analysis let's clean the text a bit by removing punctuation and converting everything to lowercase.
-
-```{python}
 import re
 
 def clean_text(text):
@@ -204,14 +203,23 @@ bible_df["cleaned_text"] = bible_df["text"].apply(clean_text)
 bible_df.head()
 ```
 
+The way Testament is assigned also adds possibility to check if there are any unknown books in the dataset.
+From the previous check we know that the number of books is correct, but we haven't checked if all the books really are books from the Bible.
+
+```{python}
+print(f"Unknown testaments present: {(bible_df['testament'] == 'Unknown').sum()}")
+```
+
+No verse is assigned to "Unknown" testament, thus we can be sure that all books in the dataset are indeed from the Bible.
+
+Now we can proceed with the analysis of the Testaments.
+
 :::{.panel-tabset}
 ## Bible
 ```{python}
 with open("../data/stopwords.txt", "r") as f:
     stopwords = set(f.read().splitlines())
-```
 
-```{python}
 def basic_verses_chapters_books_stats(df, testament_name):
     print(f"Number of verses in {testament_name}: {len(df)}")
     print(f"Number of books in {testament_name}: {df['book'].nunique()}")
@@ -279,9 +287,7 @@ def plot_wordcloud(df, testament_name):
     plt.axis('off')
     plt.title(f"Word Cloud for {testament_name}")
     plt.show()
-```
 
-```{python}
 bible_df.head()
 ```
 
@@ -431,7 +437,7 @@ plot_wordcloud(new_testament_df, "New Testament")
 
 :::
 
-### Comparison of Testaments
+## Comparison of Testaments
 
 
 :::{.panel-tabset}

@@ -230,14 +230,29 @@ def longest_shortest_books(df, testament_name):
     print(f"Longest book in {testament_name}: {book_lengths.idxmax()} ({book_lengths.max()} verses)")
     print(f"Shortest book in {testament_name}: {book_lengths.idxmin()} ({book_lengths.min()} verses)")
 
+def longest_shortest_books_by_words(df, testament_name, stopwords = []):
+    new_df = df.copy()
+    new_df['word_count'] = new_df['cleaned_text'].apply(lambda x: len([word for word in x.split() if word not in stopwords]))
+    book_word_lengths = new_df.groupby('book')['word_count'].sum()
+    print(f"Longest book by words in {testament_name}: {book_word_lengths.idxmax()} ({book_word_lengths.max()} words)")
+    print(f"Shortest book by words in {testament_name}: {book_word_lengths.idxmin()} ({book_word_lengths.min()} words)")
+
 def average_verses_per_book(df, testament_name):
     book_lengths = df.groupby('book').size()
     average_verses = book_lengths.mean()
     print(f"Average number of verses per book in {testament_name}: {average_verses:.2f}")
 
-def average_words_per_verse(df, testament_name):
+def longest_shortest_verses(df, testament_name, stopwords = []):
     new_df = df.copy()
-    new_df['word_count'] = new_df['cleaned_text'].apply(lambda x: len(x.split()))
+    new_df['word_count'] = new_df['cleaned_text'].apply(lambda x: len([word for word in x.split() if word not in stopwords]))
+    longest_verse = new_df.loc[new_df['word_count'].idxmax()]
+    shortest_verse = new_df.loc[new_df['word_count'].idxmin()]
+    print(f"Longest verse in {testament_name}: {longest_verse['book']} {longest_verse['chapter']}:{longest_verse['verse']} ({longest_verse['word_count']} words)")
+    print(f"Shortest verse in {testament_name}: {shortest_verse['book']} {shortest_verse['chapter']}:{shortest_verse['verse']} ({shortest_verse['word_count']} words)")
+
+def average_words_per_verse(df, testament_name, stopwords = []):
+    new_df = df.copy()
+    new_df['word_count'] = new_df['cleaned_text'].apply(lambda x: len([word for word in x.split() if word not in stopwords]))
     average_words = new_df['word_count'].mean()
     print(f"Average number of words per verse in {testament_name}: {average_words:.2f}")
 
@@ -294,10 +309,6 @@ def plot_wordcloud(df, testament_name):
     plt.title(f"Word Cloud for {testament_name}")
     plt.show()
 
-bible_df.head()
-```
-
-```{python}
 basic_verses_chapters_books_stats(bible_df, "Bible")
 ```
 
@@ -306,8 +317,22 @@ longest_shortest_books(bible_df, "Bible")
 ```
 
 ```{python}
+longest_shortest_books_by_words(bible_df, "Bible")
+```
+
+```{python}
+longest_shortest_books_by_words(bible_df, "Bible", stopwords=stopwords)
+```
+
+```{python}
 average_verses_per_book(bible_df, "Bible")
 average_words_per_verse(bible_df, "Bible")
+average_words_per_verse(bible_df, "Bible (filtered)", stopwords=stopwords)
+```
+
+```{python}
+longest_shortest_verses(bible_df, "Bible")
+longest_shortest_verses(bible_df, "Bible (filtered)", stopwords=stopwords)
 ```
 
 :::{.panel-tabset}
@@ -345,10 +370,7 @@ plot_wordcloud(bible_df, "Bible")
 
 ```{python}
 old_testament_df = bible_df[bible_df["testament"] == "Old Testament"]
-old_testament_df.head()
-```
 
-```{python}
 basic_verses_chapters_books_stats(old_testament_df, "Old Testament")
 ```
 
@@ -395,10 +417,7 @@ plot_wordcloud(old_testament_df, "Old Testament")
 
 ```{python}
 new_testament_df = bible_df[bible_df["testament"] == "New Testament"]
-new_testament_df.head()
-```
 
-```{python}
 basic_verses_chapters_books_stats(new_testament_df, "New Testament")
 ```
 

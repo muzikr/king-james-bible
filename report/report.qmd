@@ -236,8 +236,9 @@ def average_verses_per_book(df, testament_name):
     print(f"Average number of verses per book in {testament_name}: {average_verses:.2f}")
 
 def average_words_per_verse(df, testament_name):
-    df['word_count'] = df['cleaned_text'].apply(lambda x: len(x.split()))
-    average_words = df['word_count'].mean()
+    new_df = df.copy()
+    new_df['word_count'] = new_df['cleaned_text'].apply(lambda x: len(x.split()))
+    average_words = new_df['word_count'].mean()
     print(f"Average number of words per verse in {testament_name}: {average_words:.2f}")
 
 def plot_top_words(df, testament_name, number_of_words=20):

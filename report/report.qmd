@@ -26,12 +26,20 @@ But before we get to the modeling part, we will first explore the data itself an
 
 # Data
 
-The King James Bible dataset contains full text of the Bible in the following format `Book Chapter:Verse    Text`:
+The King James Bible dataset contains full text of the Bible divided into verses.
+The dataset have been provided by our teachers[1] in a simple text format with non-standard delimiters.
+The format (columns) of the dataset is the following: `Book Chapter:Verse    Text`, where:
+
+:::{.column-margin}
+\[1\]: [https://www.ksi.mff.cuni.cz/~holubova/NDBI048/](https://www.ksi.mff.cuni.cz/~holubova/NDBI048/https://www.ksi.mff.cuni.cz/~holubova/NDBI048/)
+:::
 
 - Book - name of the book where the verse can be found
 - Chapter - chapter number
 - Verse - verse number
 - Text - text of the verse
+
+Thus, after loading and parsing the data we have the following dataframe structure:
 
 ```{python}
 import pandas as pd
@@ -53,6 +61,10 @@ bible_df = pd.concat([parts, bible_df["text"]], axis=1)
 bible_df.head()
 ```
 
+As we can see, we have nicely prepared dataframe.
+Another thing we can observe is that the text of the verses contains punctuation and is in mixed case.
+We will deal with this later during the text preprocessing step.
+
 ## Data Quality Check
 
 Now let's check if we have all data and if there are any duplicates:
@@ -66,12 +78,12 @@ print(f"Number of missing values:\n{bible_df.isna().sum()}")
 ```
 
 As we can see, there are no duplicates and no missing values in our dataset.
-I also managed to find \[[1](https://kingjamesbibledictionary.com/BibleFacts)\]\[[2](https://blackletterkingjamesbible.com/Library/BibleStatistics)\] that the King James Bible contains:
+I also managed to find \[[2](https://kingjamesbibledictionary.com/BibleFacts)\]\[[3](https://blackletterkingjamesbible.com/Library/BibleStatistics)\] that the King James Bible contains:
 
 :::{.column-margin}
-\[1\]: [https://kingjamesbibledictionary.com/BibleFacts](https://kingjamesbibledictionary.com/BibleFacts)
+\[2\]: [https://kingjamesbibledictionary.com/BibleFacts](https://kingjamesbibledictionary.com/BibleFacts)
 
-\[2\]: [https://blackletterkingjamesbible.com/Library/BibleStatistics](https://blackletterkingjamesbible.com/Library/BibleStatistics)
+\[3\]: [https://blackletterkingjamesbible.com/Library/BibleStatistics](https://blackletterkingjamesbible.com/Library/BibleStatistics)
 :::
 
 - 66 books

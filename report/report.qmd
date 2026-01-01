@@ -217,7 +217,7 @@ Now we can proceed with the analysis of the Testaments.
 :::{.panel-tabset}
 ## Bible
 ```{python}
-with open("../data/stopwords.txt", "r") as f:
+with open("../data/stopwords-big.txt", "r") as f:
     stopwords = set(f.read().splitlines())
 
 def basic_verses_chapters_books_stats(df, testament_name):
@@ -281,7 +281,12 @@ def plot_top_words_filtered(df, testament_name, stopwords, number_of_words=20):
 from wordcloud import WordCloud
 
 def plot_wordcloud(df, testament_name):
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(df['cleaned_text']))
+    wordcloud = WordCloud(
+        width=800,
+        height=400,
+        background_color='white',
+        stopwords=stopwords,
+    ).generate(' '.join(df['cleaned_text']))
     plt.figure(figsize=(10, 6))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')

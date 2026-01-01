@@ -216,6 +216,10 @@ Now we can proceed with the analysis of the Testaments.
 
 :::{.panel-tabset}
 ## Bible
+
+Here we will look at statistics for the whole Bible.
+First, for the completeness, let's look at the basic statistics again.
+
 ```{python}
 with open("../data/stopwords-big.txt", "r") as f:
     stopwords = set(f.read().splitlines())
@@ -312,17 +316,39 @@ def plot_wordcloud(df, testament_name):
 basic_verses_chapters_books_stats(bible_df, "Bible")
 ```
 
+From the data introduction section we already know these numbers and also we know, that the whole Bible is included in the dataset.
+Let's look at the longest and shortest books by number of verses.
+
 ```{python}
 longest_shortest_books(bible_df, "Bible")
 ```
+
+The longest book (Book of Psalms) is part of the Old Testament, while the shortest book (2 John) is part of the New Testament.
+Now we will look at the longest and shortest books by number of words.
 
 ```{python}
 longest_shortest_books_by_words(bible_df, "Bible")
 ```
 
+Now, the books changed to Book of Jeremiah (longest) and 3 John (shortest).
+What stays the same is that the longest book is still from the Old Testament and the shortest from the New Testament.
+
+Since this is a text based analysis, there is a small weakness right now.
+Not all the words carry significant meaning (e.g. "the", "and", "of", etc.).
+These are called stopwords and it makes sense to filter them out before doing the analysis.
+The list of stopwords that we will use is again provided by our teachers[1].
+Thus, let's look again at the longest and shortest books by number of words, but this time filtering out the stopwords.
+
 ```{python}
 longest_shortest_books_by_words(bible_df, "Bible", stopwords=stopwords)
 ```
+
+Surprisingly, now the books return to the same books as when we looked at the number of verses.
+This is quite important for later modeling especially the Book of Psalms.
+Not only is the book quite long, but also most of the words are meaningful.
+These words will later help the model to classify the verses correctly.
+
+Next we will look at the averages, especially average number of verses per book and average number of words per verse (with and without stopwords).
 
 ```{python}
 average_verses_per_book(bible_df, "Bible")
@@ -330,10 +356,24 @@ average_words_per_verse(bible_df, "Bible")
 average_words_per_verse(bible_df, "Bible (filtered)", stopwords=stopwords)
 ```
 
+If we combine the knowledge of the shortest and longest books with the averages, we can see that there is quite a big variance in the number of verses per book.
+This corresponds to what can be observed in the histogram from the verse distribution section.
+Another thing worth mentioning, is that the average number of words per verse decreases significantly (more then half a decline) when filtering out the stopwords.
+This is expected as stopwords usually make up a significant portion of the text as they are used to connect meaningful words together.
+
+The last thing before moving to plots is to look at the longest and shortest verses (with and without stopwords).
+
 ```{python}
 longest_shortest_verses(bible_df, "Bible")
 longest_shortest_verses(bible_df, "Bible (filtered)", stopwords=stopwords)
 ```
+
+One interesting observation is that the shortest verse without stopwords has 0 words.
+This means that the verse contains only words that we consider stopwords.
+This can indicate that our set of stopwords is too restrictive and might cause problems later, as we would also like to classify such verses correctly.
+
+Let's now move to the plots.
+Firstly let's look at 20 most common words in the whole Bible.
 
 :::{.panel-tabset}
 ## Plot
@@ -348,6 +388,11 @@ print(top_words_bible)
 ```
 :::
 
+We can see that the most common words are mostly stopwords.
+The only word that is not a stopword is "lord", which is expected as it is a very common word in the Bible, especially the Old Testament, which is also the longer testament as we know.
+
+Let's remove the stopwords and look at the most common words again.
+
 :::{.panel-tabset}
 ## Plot
 ```{python}
@@ -361,10 +406,22 @@ print(top_words_bible_filtered)
 ```
 :::
 
+As expected, after filtering out the stopwords, we can see more meaningful words.
+Still, there are some words that could be considered stopwords (e.g. "thou", "thy").
+These are archaic words that are not commonly used in modern English, but they might still be used in the Bible.
+This could also mean that the set of stopwords could be further improved for our specific use case.
+
+We can also see that most of the words are related to religious context (e.g. "god", "lord", "son", "israel", etc.).
+This is expected from the nature of the text of choice.
+
+Finally, let's look at the word cloud for the whole Bible.
+
 ```{python}
 plot_wordcloud(bible_df, "Bible")
 ```
 
+This is a nice visualization of the most common words in the bible.
+Larger the word is the more common it is.
 
 ## Old Testament
 

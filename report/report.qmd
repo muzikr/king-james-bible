@@ -436,8 +436,22 @@ longest_shortest_books(old_testament_df, "Old Testament")
 ```
 
 ```{python}
+longest_shortest_books_by_words(old_testament_df, "Old Testament")
+```
+
+```{python}
+longest_shortest_books_by_words(old_testament_df, "Old Testament", stopwords=stopwords)
+```
+
+```{python}
 average_verses_per_book(old_testament_df, "Old Testament")
 average_words_per_verse(old_testament_df, "Old Testament")
+average_words_per_verse(old_testament_df, "Old Testament (filtered)", stopwords=stopwords)
+```
+
+```{python}
+longest_shortest_verses(old_testament_df, "Old Testament")
+longest_shortest_verses(old_testament_df, "Old Testament (filtered)", stopwords=stopwords)
 ```
 
 :::{.panel-tabset}
@@ -483,8 +497,22 @@ longest_shortest_books(new_testament_df, "New Testament")
 ```
 
 ```{python}
+longest_shortest_books_by_words(new_testament_df, "New Testament")
+```
+
+```{python}
+longest_shortest_books_by_words(new_testament_df, "New Testament", stopwords=stopwords)
+```
+
+```{python}
 average_verses_per_book(new_testament_df, "New Testament")
 average_words_per_verse(new_testament_df, "New Testament")
+average_words_per_verse(new_testament_df, "New Testament (filtered)", stopwords=stopwords)
+```
+
+```{python}
+longest_shortest_verses(new_testament_df, "New Testament")
+longest_shortest_verses(new_testament_df, "New Testament (filtered)", stopwords=stopwords)
 ```
 
 :::{.panel-tabset}

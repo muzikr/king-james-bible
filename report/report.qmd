@@ -549,6 +549,9 @@ plot_wordcloud(new_testament_df, "New Testament")
 
 ## Comparison of Testaments
 
+Here we will compare the two Testaments.
+This is going to help us understand more what can we expect from the modeling part later on.
+Since we are going to try to classify verses into Testaments, let's firstly look what is the size difference between the two Testaments.
 
 :::{.panel-tabset}
 
@@ -581,6 +584,11 @@ print(verse_counts)
 ```
 :::
 
+As we can see, the Old Testament is nearly three times larger then the New Testament in terms of number of verses.
+Since we are going to classify the verses, we should look out for over-fitting towards the Old Testament.
+
+Next, let's look at the average number of words per verse in each Testament.
+
 
 :::{.panel-tabset}
 
@@ -600,6 +608,10 @@ print("Average number of words per verse per Testament:")
 print(avg_words_per_verse)
 ```
 :::
+
+From the graph we can see, that verses in the Old Testament are generally longer than those in the New Testament.
+This again can harm the model as there is a shorter context to work with in the New Testament verses.
+
 
 # Modeling
 

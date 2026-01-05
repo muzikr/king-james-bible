@@ -616,7 +616,7 @@ This again can harm the model as there is a shorter context to work with in the 
 ```{python}
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
+from sklearn.svm import LinearSVC
 from sklearn.metrics import classification_report, accuracy_score
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -632,16 +632,16 @@ tfidf = TfidfVectorizer(
     analyzer="word",
     min_df=3,
     max_features=50000,
-    #stop_words=list(stopwords)
+    stop_words=None
 )
 
 X_train_tfidf = tfidf.fit_transform(X_train)
 X_test_tfidf  = tfidf.transform(X_test)
 
-clf = LogisticRegression(max_iter=500)
-clf.fit(X_train_tfidf, y_train)
+svc = LinearSVC(max_iter=2000, random_state=42, dual=False)
+svc.fit(X_train_tfidf, y_train)
 
-pred = clf.predict(X_test_tfidf)
+pred = svc.predict(X_test_tfidf)
 print("Accuracy:", accuracy_score(y_test, pred))
 print(classification_report(y_test, pred))
 ```
@@ -653,7 +653,7 @@ print(classification_report(y_test, pred))
 import numpy as np
 
 feature_names = tfidf.get_feature_names_out()
-coef = clf.coef_[0]
+coef = svc.coef_[0]
 
 top_new = np.argsort(coef)[-20:]
 top_old = np.argsort(coef)[:20]
@@ -690,7 +690,7 @@ for i in top_old:
 ```{python}
 from sklearn.metrics import confusion_matrix
 
-labels = clf.classes_
+labels = svc.classes_
 
 cm = confusion_matrix(y_test, pred, labels=labels)
 

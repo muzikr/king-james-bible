@@ -214,3 +214,5 @@ data/stopwords.txt
 data/stopwords-big.txt
 
 report/.jupyter_cache
+
+*.pkl

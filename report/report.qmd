@@ -716,27 +716,29 @@ plt.show()
 ```
 
 ```{python}
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve, auc, precision_recall_curve, average_precision_score
 from sklearn.preprocessing import label_binarize
 
-# Convert labels to binary (Old = 0, New = 1)
-y_bin = label_binarize(y_test, classes=["Old Testament", "New Testament"]).ravel()
+# Convert labels to binary (Old = 1, New = 0)
+y_bin = label_binarize(y_test, classes=["New Testament", "Old Testament"]).ravel()
 
-idx = list(clf.classes_).index("New Testament")
+# Get decision function scores (LinearSVC doesn't have predict_proba by default)
+# Negate scores to align with class order (Old=0, New=1)
+y_scores = svc.decision_function(X_test_tfidf)
 
-# Predict probabilities for the New Testament
-y_prob = clf.predict_proba(X_test_tfidf)[:, idx]
-
-fpr, tpr, _ = roc_curve(y_bin, y_prob)
+# Calculate ROC curve
+fpr, tpr, _ = roc_curve(y_bin, y_scores)
 roc_auc = auc(fpr, tpr)
 
-plt.figure(figsize=(8, 8))
+# Plot ROC Curve
+plt.figure(figsize=(8, 6))
 plt.plot(fpr, tpr, linewidth=2, label=f"AUC = {roc_auc:.3f}")
-plt.plot([0, 1], [0, 1], linestyle="--")
+plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
 plt.title("ROC Curve")
 plt.xlabel("False Positive Rate")
 plt.ylabel("True Positive Rate")
 plt.legend()
+plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.show()
 ```

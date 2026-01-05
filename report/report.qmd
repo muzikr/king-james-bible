@@ -743,4 +743,24 @@ plt.tight_layout()
 plt.show()
 ```
 
+```{python}
+# Calculate Precision-Recall curve
+precision, recall, _ = precision_recall_curve(y_bin, y_scores)
+pr_auc = average_precision_score(y_bin, y_scores)
+
+# Plot Precision-Recall Curve
+plt.figure(figsize=(8, 6))
+plt.plot(recall, precision, linewidth=2, label=f"AP = {pr_auc:.3f}")
+plt.fill_between(recall, precision, alpha=0.2)
+plt.title("Precision-Recall Curve")
+plt.xlabel("Recall")
+plt.ylabel("Precision")
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.xlim([0, 1])
+plt.ylim([0, 1])
+plt.tight_layout()
+plt.show()
+```
+
 # Conclusion

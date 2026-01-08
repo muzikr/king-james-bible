@@ -322,62 +322,224 @@ We should be cautious about accuracy metric as it can be misleading in imbalance
 Another thing to look out for is making sure that there is enough representation of the smaller class (New Testament) in both training and test sets.
 This can be achieved by stratified sampling during the train-test split.
 
+## Word based analysis
 
+In this sub-section we will perform some word based analysis of the two Testaments.
+Firstly we will introduce the concept of stopwords, then we will look at word verses analysis, vocabulary overlap and finally most used words in the Bible.
 
-## Analysis per Testament
+### Stopwords
 
-Here we will look at some basic statistics and visualizations for the New and Old Testament.
-We will look again at number of verses, chapters and book, but additionally look also at the text itself.
-For completeness we also include the statistics of the the whole Bible.
-To maintain consistency we hence also include all the statistics for the whole Bible even though some of them are repeated from the previous sections.
-
-:::{.panel-tabset}
-## Bible
-
-Here we will look at statistics for the whole Bible.
-First, for the completeness, let's look at the basic statistics again.
+Before we start, we should mention the concept of **stopwords**.
+If we look at text, not all words carry significant meaning (e.g. "the", "and", "of", etc.).
+These are called stopwords and usually it makes sense to filter them out before doing the analysis and modeling.
+The list of stopwords that we will use here is again provided by our teachers[1].
 
 ```{python}
 with open("../data/stopwords-big.txt", "r") as f:
     stopwords = set(f.read().splitlines())
 
-def basic_verses_chapters_books_stats(df, testament_name):
-    print(f"Number of verses in {testament_name}: {len(df)}")
-    print(f"Number of books in {testament_name}: {df['book'].nunique()}")
-    print(f"Number of chapters in {testament_name}: {df.groupby(['book', 'chapter']).ngroups}")
+print(f"Number of stopwords: {len(stopwords)}")
+print("Some stopwords:", list(stopwords)[:10])
+```
 
+This is pretty rich set of stopwords.
+Most of the analysis will be done both with and without stopwords to see how it affects the results.
+This will help us decide whether to use stopwords filtering in the modeling part or not.
 
+### Word verses analysis
 
-def longest_shortest_books_by_words(df, testament_name, stopwords = []):
-    new_df = df.copy()
-    new_df['word_count'] = new_df['cleaned_text'].apply(lambda x: len([word for word in x.split() if word not in stopwords]))
-    book_word_lengths = new_df.groupby('book')['word_count'].sum()
-    print(f"Longest book by words in {testament_name}: {book_word_lengths.idxmax()} ({book_word_lengths.max()} words)")
-    print(f"Shortest book by words in {testament_name}: {book_word_lengths.idxmin()} ({book_word_lengths.min()} words)")
+Now let's look at sizes of verses in terms of number of words.
+The sizes of verses are important as they determine the context size that the model will have to work with.
 
-def average_verses_per_book(df, testament_name):
-    book_lengths = df.groupby('book').size()
-    average_verses = book_lengths.mean()
-    print(f"Average number of verses per book in {testament_name}: {average_verses:.2f}")
+:::{.panel-tabset}
 
-def longest_shortest_verses(df, testament_name, stopwords = []):
+## Plot
+```{python}
+# Unfiltered averages (with stopwords)
+avg_words_per_verse = bible_df.groupby('testament')['cleaned_text'].apply(
+    lambda x: x.str.split().apply(len).mean()
+)
+
+# Filtered averages (without stopwords)
+def count_non_stopwords(s):
+    return sum(1 for w in s.split() if w not in stopwords)
+
+filtered_avg_words_per_verse = bible_df.groupby('testament')['cleaned_text'].apply(
+    lambda x: x.apply(count_non_stopwords).mean()
+)
+
+# Combine into a single dataframe for plotting
+avg_df = pd.DataFrame({
+    'Testament': list(avg_words_per_verse.index) + list(filtered_avg_words_per_verse.index),
+    'AverageWords': list(avg_words_per_verse.values) + list(filtered_avg_words_per_verse.values),
+    'Type': ['Unfiltered'] * len(avg_words_per_verse) + ['Filtered'] * len(filtered_avg_words_per_verse)
+})
+
+plt.figure(figsize=(8, 8))
+sns.barplot(data=avg_df, x='Testament', y='AverageWords', hue='Type', palette="pastel")
+plt.title("Average number of words per verse per Testament")
+plt.xlabel("Testament")
+plt.ylabel("Average number of words per verse")
+# Whole-Bible constant lines (guide)
+overall_unfiltered_avg = bible_df['cleaned_text'].str.split().apply(len).mean()
+overall_filtered_avg = bible_df['cleaned_text'].apply(count_non_stopwords).mean()
+
+line1 = plt.axhline(overall_unfiltered_avg, color='gray', linestyle='--', linewidth=1.5, label='Overall (Unfiltered)')
+line2 = plt.axhline(overall_filtered_avg, color='gray', linestyle=':', linewidth=1.5, label='Overall (Filtered)')
+
+# Combine legend entries for bars and lines
+ax = plt.gca()
+handles, labels = ax.get_legend_handles_labels()
+plt.legend(handles=handles, labels=labels, title='Text + Overall')
+plt.show()
+```
+## Data
+```{python}
+print("Average number of words per verse per Testament:")
+print(avg_words_per_verse)
+print("\nAverage number of words per verse per Testament (filtered):")
+print(filtered_avg_words_per_verse)
+print("\nOverall average words per verse (unfiltered):", overall_unfiltered_avg)
+print("Overall average words per verse (filtered):", overall_filtered_avg)
+```
+:::
+
+We can see that the lengths of verses in the Old Testament are generally slightly longer than those in the New Testament.
+This trend holds both for unfiltered and filtered text.
+This might be caused by the fact that Old Testament contains more historical and poetic books, which tend to have longer verses.
+Another possibility is that there is used more archaic language in the Old Testament, which might lead to longer verses.
+
+The same trend can be observed when looking at the average number of words per verse with stopwords filtered out.
+We can see that filtering out the stopwords significantly reduces the average number of words per verse (nearly 3 times).
+But still we have to remember that those words that stay are the meaningful ones, thus the context size for the model is still quite decent.
+
+Let's now look at the extremes - longest and shortest verses (with and without stopwords).
+
+```{python}
+def longest_verse(df, testament_name, stopwords = []):
     new_df = df.copy()
     new_df['word_count'] = new_df['cleaned_text'].apply(lambda x: len([word for word in x.split() if word not in stopwords]))
     longest_verse = new_df.loc[new_df['word_count'].idxmax()]
-    shortest_verse = new_df.loc[new_df['word_count'].idxmin()]
     print(f"Longest verse in {testament_name}: {longest_verse['book']} {longest_verse['chapter']}:{longest_verse['verse']} ({longest_verse['word_count']} words)")
-    print(f"Shortest verse in {testament_name}: {shortest_verse['book']} {shortest_verse['chapter']}:{shortest_verse['verse']} ({shortest_verse['word_count']} words)")
 
-def average_words_per_verse(df, testament_name, stopwords = []):
+def shortest_verse(df, testament_name, stopwords = []):
     new_df = df.copy()
     new_df['word_count'] = new_df['cleaned_text'].apply(lambda x: len([word for word in x.split() if word not in stopwords]))
-    average_words = new_df['word_count'].mean()
-    print(f"Average number of words per verse in {testament_name}: {average_words:.2f}")
+    shortest_verse = new_df.loc[new_df['word_count'].idxmin()]
+    print(f"Shortest verse in {testament_name}: {shortest_verse['book']} {shortest_verse['chapter']}:{shortest_verse['verse']} ({shortest_verse['word_count']} words)")
 
-def plot_top_words(df, testament_name, number_of_words=20):
-    top_words = pd.Series(
+old_testament_df = bible_df[bible_df["testament"] == "Old"]
+new_testament_df = bible_df[bible_df["testament"] == "New"]
+
+print("Without stopwords filtered out:")
+longest_verse(old_testament_df, "Old Testament")
+longest_verse(new_testament_df, "New Testament")
+shortest_verse(old_testament_df, "Old Testament")
+shortest_verse(new_testament_df, "New Testament")
+print("\nWith stopwords filtered out:")
+longest_verse(old_testament_df, "Old Testament", stopwords=stopwords)
+longest_verse(new_testament_df, "New Testament", stopwords=stopwords)
+shortest_verse(old_testament_df, "Old Testament", stopwords=stopwords)
+shortest_verse(new_testament_df, "New Testament", stopwords=stopwords)
+```
+
+Main observation from the above is that the shortest verse in New Testament, when filtered for stopwords, has 0 words.
+This means that the verse contains only stopwords.
+This can indicate that our *set of stopwords is too restrictive* and might cause problems later, as we would also like to classify such verses correctly.
+
+### Vocabulary
+
+Another interesting analysis is to look at the vocabulary and the overlap between the two Testaments.
+
+<!--
+Venn diagrams of vocabulary overlap between Old and New Testament
+-->
+:::{.panel-tabset}
+
+## Plot
+```{python}
+from matplotlib_venn import venn2
+
+# Unfiltered vocabulary
+old_words = set(
+    ' '.join(bible_df[bible_df['testament'] == 'Old']['cleaned_text']).split()
+)
+new_words = set(
+    ' '.join(bible_df[bible_df['testament'] == 'New']['cleaned_text']).split()
+)
+
+# Filtered vocabulary (without stopwords)
+old_words_filtered = old_words - stopwords
+new_words_filtered = new_words - stopwords
+
+# Create side-by-side Venn diagrams
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 7))
+
+# Unfiltered
+plt.sca(ax1)
+venn2(
+    subsets = (len(old_words - new_words), len(new_words - old_words), len(old_words & new_words)),
+    set_labels = ('Old Testament', 'New Testament'),
+    set_colors = ('#ff9999','#66b3ff'),
+    alpha = 0.7
+)
+ax1.set_title("Vocabulary overlap (Unfiltered)", fontsize=12, fontweight='bold')
+
+# Filtered
+plt.sca(ax2)
+venn2(
+    subsets = (len(old_words_filtered - new_words_filtered), len(new_words_filtered - old_words_filtered), len(old_words_filtered & new_words_filtered)),
+    set_labels = ('Old Testament', 'New Testament'),
+    set_colors = ('#ff9999','#66b3ff'),
+    alpha = 0.7
+)
+ax2.set_title("Vocabulary overlap (Filtered)", fontsize=12, fontweight='bold')
+
+plt.tight_layout()
+plt.show()
+```
+
+## Data
+```{python}
+print("Unfiltered vocabulary:")
+print(f"  Number of unique words in Old Testament: {len(old_words)}")
+print(f"  Number of unique words in New Testament: {len(new_words)}")
+print(f"  Number of common words: {len(old_words & new_words)}")
+
+print("\nFiltered vocabulary (stopwords removed):")
+print(f"  Number of unique words in Old Testament: {len(old_words_filtered)}")
+print(f"  Number of unique words in New Testament: {len(new_words_filtered)}")
+print(f"  Number of common words: {len(old_words_filtered & new_words_filtered)}")
+```
+:::
+
+From the Venn diagrams above we can observe that there is huge imbalance in vocabulary size between the two Testaments, especially in the vocabulary that is unique to the Old Testament.
+The old Testament has three time more unique words than the New Testament and nearly two times more words in total.
+This can again cause problems for the model as it will have harder time classifying verses from the smaller class (New Testament) due to lack of vocabulary coverage.
+
+This also shows that there is not a significant difference when filtering out the stopwords.
+Actually we can see that the largest difference is in the common vocabulary.
+This would actually help the model as it would have less common words to confuse the two Testaments.
+
+### Most used words
+
+Finally, let's look at the most common words in the Bible.
+Again, we will look at both unfiltered and filtered (without stopwords) versions.
+Firstly, the unfiltered version.
+
+<!--
+Top 20 most common words in the Bible
+-->
+:::{.panel-tabset}
+## Plot
+```{python}
+def plot_top_words(df, testament_name, number_of_words=20, stopwords=[]):
+    words = pd.Series(
         ' '.join(df['cleaned_text']).split()
-    ).value_counts().head(number_of_words)
+    )
+    if stopwords:
+        words = words[~words.isin(stopwords)]
+    top_words = words.value_counts().head(number_of_words)
 
     plt.figure(figsize=(8, 6))
     sns.barplot(
@@ -392,26 +554,51 @@ def plot_top_words(df, testament_name, number_of_words=20):
     plt.show()
     return top_words
 
-def plot_top_words_filtered(df, testament_name, stopwords, number_of_words=20):
-    words = pd.Series(
-        ' '.join(df['cleaned_text']).split()
-    )
-    filtered_words = words[~words.isin(stopwords)]
-    top_words = filtered_words.value_counts().head(number_of_words)
+top_words_bible = plot_top_words(bible_df, "Bible")
+```
+## Data
+```{python}
+print("Top 20 most common words in Bible")
+print(top_words_bible)
+```
+:::
 
-    plt.figure(figsize=(8, 6))
-    sns.barplot(
-        x=top_words.index,
-        y=top_words.values,
-        palette="viridis"
-    )
-    plt.xticks(rotation=90)
-    plt.title(f"Top 20 most common words in {testament_name} (filtered)")
-    plt.xlabel("Words")
-    plt.ylabel("Frequency")
-    plt.show()
-    return top_words
+We can see that the most common words are mostly stopwords.
+Actually, the only word that is not a stopword is "lord".
+This is surprising, as we would expect more meaningful words to be among the most common ones.
 
+Let's remove the stopwords and look at the most common words again.
+
+<!--
+Top 20 most common words in the Bible (filtered)
+-->
+:::{.panel-tabset}
+## Plot
+```{python}
+top_words_bible_filtered = plot_top_words(bible_df, "Bible", stopwords=stopwords)
+```
+## Data
+```{python}
+print("Top 20 most common words in Bible (filtered)")
+print(top_words_bible_filtered)
+```
+:::
+
+As expected, after filtering out the stopwords, we can see more meaningful words.
+Still, there are some words that could be considered stopwords (e.g. "thou", "thy").
+These are archaic words that are not commonly used in modern English, but they might still be used in the Bible.
+This also suggests that the set of stopwords could be further improved for our specific use case.
+
+We can also see that most of the words are related to religious context (e.g. "god", "lord", "son", "israel", etc.).
+This is expected from the nature of the text of choice.
+
+### Word clouds
+
+As small final touch, let's look at the word clouds for Bible, as well, as for each Testament.
+
+:::{.panel-tabset}
+## Bible
+```{python}
 from wordcloud import WordCloud
 
 def plot_wordcloud(df, testament_name):
@@ -427,263 +614,36 @@ def plot_wordcloud(df, testament_name):
     plt.title(f"Word Cloud for {testament_name}")
     plt.show()
 
-basic_verses_chapters_books_stats(bible_df, "Bible")
-```
-
-From the data introduction section we already know these numbers and also we know, that the whole Bible is included in the dataset.
-Let's look at the longest and shortest books by number of verses.
-
-
-The longest book (Book of Psalms) is part of the Old Testament, while the shortest book (2 John) is part of the New Testament.
-Now we will look at the longest and shortest books by number of words.
-
-```{python}
-longest_shortest_books_by_words(bible_df, "Bible")
-```
-
-Now, the books changed to Book of Jeremiah (longest) and 3 John (shortest).
-What stays the same is that the longest book is still from the Old Testament and the shortest from the New Testament.
-
-Since this is a text based analysis, there is a small weakness right now.
-Not all the words carry significant meaning (e.g. "the", "and", "of", etc.).
-These are called stopwords and it makes sense to filter them out before doing the analysis.
-The list of stopwords that we will use is again provided by our teachers[1].
-Thus, let's look again at the longest and shortest books by number of words, but this time filtering out the stopwords.
-
-```{python}
-longest_shortest_books_by_words(bible_df, "Bible", stopwords=stopwords)
-```
-
-Surprisingly, now the books return to the same books as when we looked at the number of verses.
-This is quite important for later modeling especially the Book of Psalms.
-Not only is the book quite long, but also most of the words are meaningful.
-These words will later help the model to classify the verses correctly.
-
-Next we will look at the averages, especially average number of verses per book and average number of words per verse (with and without stopwords).
-
-```{python}
-average_verses_per_book(bible_df, "Bible")
-average_words_per_verse(bible_df, "Bible")
-average_words_per_verse(bible_df, "Bible (filtered)", stopwords=stopwords)
-```
-
-If we combine the knowledge of the shortest and longest books with the averages, we can see that there is quite a big variance in the number of verses per book.
-This corresponds to what can be observed in the histogram from the verse distribution section.
-Another thing worth mentioning, is that the average number of words per verse decreases significantly (more then half a decline) when filtering out the stopwords.
-This is expected as stopwords usually make up a significant portion of the text as they are used to connect meaningful words together.
-
-The last thing before moving to plots is to look at the longest and shortest verses (with and without stopwords).
-
-```{python}
-longest_shortest_verses(bible_df, "Bible")
-longest_shortest_verses(bible_df, "Bible (filtered)", stopwords=stopwords)
-```
-
-One interesting observation is that the shortest verse without stopwords has 0 words.
-This means that the verse contains only words that we consider stopwords.
-This can indicate that our set of stopwords is too restrictive and might cause problems later, as we would also like to classify such verses correctly.
-
-Let's now move to the plots.
-Firstly let's look at 20 most common words in the whole Bible.
-
-:::{.panel-tabset}
-## Plot
-```{python}
-top_words_bible = plot_top_words(bible_df, "Bible")
-```
-
-## Data
-```{python}
-print("Top 20 most common words in Bible")
-print(top_words_bible)
-```
-:::
-
-We can see that the most common words are mostly stopwords.
-The only word that is not a stopword is "lord", which is expected as it is a very common word in the Bible, especially the Old Testament, which is also the longer testament as we know.
-
-Let's remove the stopwords and look at the most common words again.
-
-:::{.panel-tabset}
-## Plot
-```{python}
-top_words_bible_filtered = plot_top_words_filtered(bible_df, "Bible", stopwords=stopwords)
-```
-
-## Data
-```{python}
-print("Top 20 most common words in Bible (filtered)")
-print(top_words_bible_filtered)
-```
-:::
-
-As expected, after filtering out the stopwords, we can see more meaningful words.
-Still, there are some words that could be considered stopwords (e.g. "thou", "thy").
-These are archaic words that are not commonly used in modern English, but they might still be used in the Bible.
-This could also mean that the set of stopwords could be further improved for our specific use case.
-
-We can also see that most of the words are related to religious context (e.g. "god", "lord", "son", "israel", etc.).
-This is expected from the nature of the text of choice.
-
-Finally, let's look at the word cloud for the whole Bible.
-
-```{python}
 plot_wordcloud(bible_df, "Bible")
 ```
-
-This is a nice visualization of the most common words in the bible.
-Larger the word is the more common it is.
-
 ## Old Testament
-
-```{python}
-old_testament_df = bible_df[bible_df["testament"] == "Old"]
-
-basic_verses_chapters_books_stats(old_testament_df, "Old Testament")
-```
-
-```{python}
-longest_shortest_books_by_words(old_testament_df, "Old Testament")
-```
-
-```{python}
-longest_shortest_books_by_words(old_testament_df, "Old Testament", stopwords=stopwords)
-```
-
-```{python}
-average_verses_per_book(old_testament_df, "Old Testament")
-average_words_per_verse(old_testament_df, "Old Testament")
-average_words_per_verse(old_testament_df, "Old Testament (filtered)", stopwords=stopwords)
-```
-
-```{python}
-longest_shortest_verses(old_testament_df, "Old Testament")
-longest_shortest_verses(old_testament_df, "Old Testament (filtered)", stopwords=stopwords)
-```
-
-:::{.panel-tabset}
-## Plot
-```{python}
-top_words_ot = plot_top_words(old_testament_df, "Old Testament")
-```
-
-## Data
-```{python}
-print("Top 20 most common words in Old Testament")
-print(top_words_ot)
-```
-:::
-
-:::{.panel-tabset}
-## Plot
-```{python}
-top_words_ot_filtered = plot_top_words_filtered(old_testament_df, "Old Testament", stopwords=stopwords)
-```
-
-## Data
-```{python}
-print("Top 20 most common words in Old Testament (filtered)")
-print(top_words_ot_filtered)
-```
-:::
-
 ```{python}
 plot_wordcloud(old_testament_df, "Old Testament")
 ```
-
 ## New Testament
-
-```{python}
-new_testament_df = bible_df[bible_df["testament"] == "New"]
-
-basic_verses_chapters_books_stats(new_testament_df, "New Testament")
-```
-
-```{python}
-longest_shortest_books_by_words(new_testament_df, "New Testament")
-```
-
-```{python}
-longest_shortest_books_by_words(new_testament_df, "New Testament", stopwords=stopwords)
-```
-
-```{python}
-average_verses_per_book(new_testament_df, "New Testament")
-average_words_per_verse(new_testament_df, "New Testament")
-average_words_per_verse(new_testament_df, "New Testament (filtered)", stopwords=stopwords)
-```
-
-```{python}
-longest_shortest_verses(new_testament_df, "New Testament")
-longest_shortest_verses(new_testament_df, "New Testament (filtered)", stopwords=stopwords)
-```
-
-:::{.panel-tabset}
-## Plot
-```{python}
-top_words_nt = plot_top_words(new_testament_df, "New Testament")
-```
-
-## Data
-```{python}
-print("Top 20 most common words in New Testament")
-print(top_words_nt)
-```
-:::
-
-:::{.panel-tabset}
-## Plot
-```{python}
-top_words_nt_filtered = plot_top_words_filtered(new_testament_df, "New Testament", stopwords=stopwords)
-```
-
-## Data
-```{python}
-print("Top 20 most common words in New Testament (filtered)")
-print(top_words_nt_filtered)
-```
-:::
-
 ```{python}
 plot_wordcloud(new_testament_df, "New Testament")
 ```
-
 :::
 
-## Comparison of Testaments
+This is a nice visualization of the most common words, but this time more than 20 words.
+Larger the word is the more common it is.
+The words are again filtered using the stopwords list.
 
-Here we will compare the two Testaments.
-This is going to help us understand more what can we expect from the modeling part later on.
-Since we are going to try to classify verses into Testaments, let's firstly look what is the size difference between the two Testaments.
+One thing to point out is that the word clouds for the Testaments are quite different.
+In the Old Testament we can see words such as "lord", "israel", "son" to be the most common ones while in the New Testament we can see words such as "jesus", "christ", "thing" to be the most common ones.
 
+## Summary of findings
 
+From the exploratory data analysis we can summarize the following findings:
 
+- There is significant class imbalance between the two Testaments, with Old Testament being nearly three times larger than New Testament in terms of number of verses. This implies that we should be cautious about accuracy metric and ensure stratified sampling during train-test split.
+- The lengths of verses in the Old Testament are generally slightly longer than those in the New Testament.
+- There is huge imbalance in vocabulary size between the two Testaments, especially in the vocabulary that is unique to the Old Testament.
+- Both the last two points again suggest that the model might have harder time classifying verses from the smaller class (New Testament) due to lack of vocabulary coverage and shorter context size.
+- The set of stopwords at hand seems to be not adequate for our specific use case, as some verses contain only stopwords and some archaic stopwords are not included in the set.
 
-Next, let's look at the average number of words per verse in each Testament.
-
-
-:::{.panel-tabset}
-
-## Plot
-```{python}
-avg_words_per_verse = bible_df.groupby('testament')['cleaned_text'].apply(lambda x: x.str.split().apply(len).mean())
-plt.figure(figsize=(8, 8))
-sns.barplot(x=avg_words_per_verse.index, y=avg_words_per_verse.values, palette="pastel")
-plt.title("Average number of words per verse per Testament")
-plt.xlabel("Testament")
-plt.ylabel("Average number of words per verse")
-plt.show()
-```
-## Data
-```{python}
-print("Average number of words per verse per Testament:")
-print(avg_words_per_verse)
-```
-:::
-
-From the graph we can see, that verses in the Old Testament are generally longer than those in the New Testament.
-This again can harm the model as there is a shorter context to work with in the New Testament verses.
-
+We should keep these findings in mind when proceeding to the modeling part.
 
 # Modeling
 

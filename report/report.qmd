@@ -647,6 +647,8 @@ We should keep these findings in mind when proceeding to the modeling part.
 
 # Modeling
 
+## Model description and training
+
 ```{python}
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -694,6 +696,8 @@ print("F1 Score (weighted):", f1_score(y_test, pred, average='weighted'))
 print("\nDetailed classification report:")
 print(classification_report(y_test, pred))
 ```
+
+## Evaluation
 
 ```{python}
 from sklearn.metrics import confusion_matrix
@@ -770,6 +774,8 @@ plt.ylim([0, 1])
 plt.tight_layout()
 plt.show()
 ```
+
+##  Important features
 
 :::{.panel-tabset}
 ## Plot

@@ -648,10 +648,10 @@ We should keep these findings in mind when proceeding to the modeling part.
 # Modeling
 
 ```{python}
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import LinearSVC
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.metrics import classification_report, accuracy_score, f1_score
 
 X_train, X_test, y_train, y_test = train_test_split(
     bible_df["cleaned_text"],
@@ -673,10 +673,25 @@ X_train_tfidf = tfidf.fit_transform(X_train)
 X_test_tfidf  = tfidf.transform(X_test)
 
 svc = LinearSVC(max_iter=2000, random_state=42, dual=False)
+
+# Cross-validation on training set
+print("Cross-validation scores (5-fold):")
+cv_scores = cross_val_score(svc, X_train_tfidf, y_train, cv=5, scoring='accuracy')
+print(f"Accuracy: {cv_scores.mean():.4f} (+/- {cv_scores.std() * 2:.4f})")
+
+cv_f1_scores = cross_val_score(svc, X_train_tfidf, y_train, cv=5, scoring='f1_macro')
+print(f"F1 Score (macro): {cv_f1_scores.mean():.4f} (+/- {cv_f1_scores.std() * 2:.4f})")
+
+# Train on full training set
 svc.fit(X_train_tfidf, y_train)
 
+# Evaluate on test set
 pred = svc.predict(X_test_tfidf)
+print("\nTest set performance:")
 print("Accuracy:", accuracy_score(y_test, pred))
+print("F1 Score (macro):", f1_score(y_test, pred, average='macro'))
+print("F1 Score (weighted):", f1_score(y_test, pred, average='weighted'))
+print("\nDetailed classification report:")
 print(classification_report(y_test, pred))
 ```
 

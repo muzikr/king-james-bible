@@ -153,7 +153,71 @@ if not duplicated_verses.empty:
 ```
 
 This might seem concerning at first, but after looking at some of the duplicate verses we can see that they are indeed the same verses appearing in different books/chapters.
-Thus, we can conclude that our dataset is complete and ready for further analysis.
+Thus, we can conclude that our dataset is complete and does not show any signs of data quality issues.
+
+## Preprocessing and Cleaning
+
+Before we can proceed with the analysis, we need to do some preprocessing and cleaning of the text data.
+For the analysis part we will need to clean the text by removing punctuation and converting everything to lowercase.
+This will help us in the word based analysis later on.
+
+Another thing we need to do is to create a new column indicating the Testament (Old or New) for each verse.
+Let's now look, how the data looks after these preprocessing steps.
+
+```{python}
+def assign_testament(book):
+    old_testament_books = [
+        # Historical books
+        "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther",
+        # Poetic books
+        "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon",
+        # Prophetic books
+        "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi"
+    ]
+
+    new_testament_books = [
+        # Gospels:
+        "Matthew", "Mark", "Luke", "John",
+        # Historical:
+        "Acts",
+        # Epistles:
+        "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude",
+        # The Revelation:
+        "Revelation"
+    ]
+
+    if book in old_testament_books:
+        return "Old Testament"
+    elif book in new_testament_books:
+        return "New Testament"
+    else:
+        return "Unknown"
+
+bible_df["testament"] = bible_df["book"].apply(assign_testament)
+
+import re
+
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r"[^a-z\s]", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+bible_df["cleaned_text"] = bible_df["text"].apply(clean_text)
+bible_df.head()
+```
+
+The way Testaments are assigned also adds possibility to check if there are any unknown books in the dataset.
+From the previous check we know that the number of books is correct, but we haven't checked if all the books really are books from the Bible.
+
+```{python}
+print(f"Unknown testaments present: {(bible_df['testament'] == 'Unknown').sum()}")
+```
+
+No verse is assigned to "Unknown" testament, thus we can be sure that all books in the dataset are indeed from the Bible.
+
+This concludes the 'Data' section.
+We have successfully loaded, parsed and cleaned the dataset and so we can proceed to the analysis part.
 
 # Exploratory Data Analysis
 
@@ -210,64 +274,6 @@ Here we will look at some basic statistics and visualizations for the New and Ol
 We will look again at number of verses, chapters and book, but additionally look also at the text itself.
 For completeness we also include the statistics of the the whole Bible.
 To maintain consistency we hence also include all the statistics for the whole Bible even though some of them are repeated from the previous sections.
-
-Since we will be doing some Testament based text analysis, we need to do some preprocessing first.
-Let's add a new column with indication of Testament and clean the text for word-based analysis.
-This includes removing punctuation and converting everything to lowercase.
-
-```{python}
-def assign_testament(book):
-    old_testament_books = [
-        # Historical books
-        "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther",
-        # Poetic books
-        "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon",
-        # Prophetic books
-        "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi"
-    ]
-
-    new_testament_books = [
-        # Gospels:
-        "Matthew", "Mark", "Luke", "John",
-        # Historical:
-        "Acts",
-        # Epistles:
-        "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude",
-        # The Revelation:
-        "Revelation"
-    ]
-
-    if book in old_testament_books:
-        return "Old Testament"
-    elif book in new_testament_books:
-        return "New Testament"
-    else:
-        return "Unknown"
-
-bible_df["testament"] = bible_df["book"].apply(assign_testament)
-
-import re
-
-def clean_text(text):
-    text = text.lower()
-    text = re.sub(r"[^a-z\s]", " ", text)
-    text = re.sub(r"\s+", " ", text).strip()
-    return text
-
-bible_df["cleaned_text"] = bible_df["text"].apply(clean_text)
-bible_df.head()
-```
-
-The way Testament is assigned also adds possibility to check if there are any unknown books in the dataset.
-From the previous check we know that the number of books is correct, but we haven't checked if all the books really are books from the Bible.
-
-```{python}
-print(f"Unknown testaments present: {(bible_df['testament'] == 'Unknown').sum()}")
-```
-
-No verse is assigned to "Unknown" testament, thus we can be sure that all books in the dataset are indeed from the Bible.
-
-Now we can proceed with the analysis of the Testaments.
 
 :::{.panel-tabset}
 ## Bible

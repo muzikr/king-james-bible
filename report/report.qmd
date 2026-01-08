@@ -222,8 +222,8 @@ We have successfully loaded, parsed and cleaned the dataset and so we can procee
 # Exploratory Data Analysis
 
 In this section we will perform some exploratory data analysis (EDA) to understand the structure and distribution of the data.
-Firstly, we are going to look at the distribution of verses, then we will do a word based analysis of the text (of Bible as whole and later per Testament).
-Finally we will compare the two Testaments based on the statistics we obtain.
+Firstly, we are going to look at the distribution of verses, and then we will look at word based comparisons of Testaments.
+At the end we will summarize the findings from the analysis and point out what can we expect from the model and what we should be cautious about.
 
 ## Verse distribution
 

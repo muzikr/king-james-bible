@@ -92,9 +92,9 @@ bible_df = bible_df.astype(types)
 bible_df.head()
 ```
 
-As we can see, we have nicely prepared dataframe.
-Another thing we can observe is that the text of the verses contains punctuation and is in mixed case.
-We will deal with this later during the text preprocessing step.
+Data seems to be loaded correctly are at first glance seems to be correct.
+But just to be sure we will do checks later on.
+For completeness, let's look at the data types of each column.
 
 ```{python}
 bible_df.dtypes

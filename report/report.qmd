@@ -80,6 +80,15 @@ parts = bible_df["ref"].str.extract(
 )
 
 bible_df = pd.concat([parts, bible_df["text"]], axis=1)
+
+types = {
+    "book": "string",
+    "chapter": "int32",
+    "verse": "int32",
+    "text": "string",
+}
+bible_df = bible_df.astype(types)
+
 bible_df.head()
 ```
 

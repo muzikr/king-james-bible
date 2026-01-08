@@ -187,9 +187,9 @@ def assign_testament(book):
     ]
 
     if book in old_testament_books:
-        return "Old Testament"
+        return "Old"
     elif book in new_testament_books:
-        return "New Testament"
+        return "New"
     else:
         return "Unknown"
 
@@ -487,7 +487,7 @@ Larger the word is the more common it is.
 ## Old Testament
 
 ```{python}
-old_testament_df = bible_df[bible_df["testament"] == "Old Testament"]
+old_testament_df = bible_df[bible_df["testament"] == "Old"]
 
 basic_verses_chapters_books_stats(old_testament_df, "Old Testament")
 ```
@@ -548,7 +548,7 @@ plot_wordcloud(old_testament_df, "Old Testament")
 ## New Testament
 
 ```{python}
-new_testament_df = bible_df[bible_df["testament"] == "New Testament"]
+new_testament_df = bible_df[bible_df["testament"] == "New"]
 
 basic_verses_chapters_books_stats(new_testament_df, "New Testament")
 ```
@@ -742,7 +742,7 @@ from sklearn.metrics import roc_curve, auc, precision_recall_curve, average_prec
 from sklearn.preprocessing import label_binarize
 
 # Convert labels to binary (Old = 1, New = 0)
-y_bin = label_binarize(y_test, classes=["New Testament", "Old Testament"]).ravel()
+y_bin = label_binarize(y_test, classes=["New", "Old"]).ravel()
 
 # Get decision function scores (LinearSVC doesn't have predict_proba by default)
 # Negate scores to align with class order (Old=0, New=1)

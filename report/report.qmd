@@ -30,6 +30,19 @@ Finally, we will train a classification model, evaluate its performance and look
 We will be dealing mainly with text data, thus some text preprocessing will be needed.
 We will be using Python programming language with libraries such as Pandas, Seaborn, Matplotlib and Scikit-learn for data manipulation, visualization and modeling.
 
+## Planned Steps
+
+Firstly we will load and parse the data.
+Then we will perform a data quality check to ensure that the dataset is complete and does not contain any duplicates or missing values.
+Next, we will clean the text data by removing punctuation and converting everything to lowercase.
+After that we will do some analysis of the data.
+This will include looking at the distribution of verses per book and chapter, as well as some word based analysis of the text.
+We will also experiment with filtering out stopwords to see how it affects the analysis.
+Finally, we will train a classification model using TF-IDF vectorization and Support Vector Machine (SVM) algorithm.
+
+Another options for the modeling part could be to use other algorithms such as Logistic Regression, Random Forest or even some of the deep learning models.
+For the text vectorization part we could also experiment with other techniques such as Count Vectorization or Word Embeddings (e.g. Word2Vec, GloVe).
+But for the sake of simplicity and interpretability we will stick with TF-IDF and SVM (as it outputted the best results in our experiments).
 
 # Data
 

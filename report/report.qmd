@@ -63,6 +63,9 @@ The format (columns) of the dataset is the following: `Book Chapter:Verse    Tex
 
 Thus, after loading and parsing the data we have the following dataframe structure:
 
+:::{.panel-tabset}
+
+## Sample
 ```{python}
 import pandas as pd
 import seaborn as sns
@@ -92,14 +95,16 @@ bible_df = bible_df.astype(types)
 bible_df.head()
 ```
 
-Data seems to be loaded correctly are at first glance seems to be correct.
-But just to be sure we will do checks later on.
-For completeness, let's look at the data types of each column.
+## Types
 
 ```{python}
 bible_df.dtypes
 ```
+:::
 
+Data seems to be loaded correctly are at first glance seems to be correct.
+But just to be sure we will do checks later on.
+For completeness, under the Types tab we can see the data types of each column, that are as we would expect them to be.
 
 ## Data Check
 

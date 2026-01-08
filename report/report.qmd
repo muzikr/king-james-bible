@@ -96,7 +96,10 @@ As we can see, we have nicely prepared dataframe.
 Another thing we can observe is that the text of the verses contains punctuation and is in mixed case.
 We will deal with this later during the text preprocessing step.
 
-## Data Quality Check
+```{python}
+bible_df.dtypes
+```
+
 
 In this section we will perform a simple data quality check to ensure that our dataset is complete and does not contain any duplicates or missing values.
 Firstly, let's look at some basic statistics of the dataset:

@@ -647,7 +647,25 @@ We should keep these findings in mind when proceeding to the modeling part.
 
 # Modeling
 
-## Model description and training
+In this section we will train a classification model to classify verses into Old and New Testament.
+Later we will evaluate the model performance and look at the most important features.
+
+## Model description
+
+For the modeling part we will be using TF-IDF vectorization for text representation and Support Vector Machine (SVM) algorithm for classification.
+
+The only preprocessing step that remains is to split the data into training and test sets using stratified sampling to ensure that both sets have similar class distribution.
+For that we will use the split function from Scikit-learn library.
+The test size is set to be 20% of the whole dataset.
+
+We will use TF-IDF vectorizer with both unigrams and bigrams, minimum document frequency of 3 and maximum number of features set to 50,000.
+We will not filter out any stopwords for the modeling part, as we have seen in the analysis part that some verses contain only stopwords.
+
+The classification algorithm will be Linear Support Vector Classifier (LinearSVC) with maximum number of iterations set to 2000.
+
+## Evaluation
+
+Let's now train the model and evaluate its performance using cross-validation on the training set and then on the test set.
 
 ```{python}
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -697,7 +715,11 @@ print("\nDetailed classification report:")
 print(classification_report(y_test, pred))
 ```
 
-## Evaluation
+The model performs quite well on both cross-validation and test set.
+The accuracy is at 94.5%.
+As mentioned before, accuracy can be misleading in imbalanced datasets, thus we also look at F1 scores.
+The macro F1 score is at 0.926 on the test set, which is also quite good.
+Let's now look at the confusion matrix to see where the model makes mistakes.
 
 ```{python}
 from sklearn.metrics import confusion_matrix
@@ -727,6 +749,15 @@ plt.tight_layout()
 plt.show()
 ```
 
+As predicted the model makes more mistakes classifying the verses from the New Testament.
+The number if misclassified verses is not as high as we could expect.
+More surprising might be that there is also a significant number of misclassified verses from the Old Testament.
+It's just half as many as from the New Testament.
+Considering the class imbalance (size of training set, vocabulary, verse lengths, etc.) one would expect better performance on the Old Testament verses.
+On the other hand, this shows that the model is not biased towards the larger class, which is a good sign.
+
+Next, let's look at ROC curve for the model.
+
 ```{python}
 from sklearn.metrics import roc_curve, auc, precision_recall_curve, average_precision_score
 from sklearn.preprocessing import label_binarize
@@ -755,6 +786,12 @@ plt.tight_layout()
 plt.show()
 ```
 
+We can see that the ROC curve is close to the top-left corner, which indicates good performance (perfect ROC would pass through the top-left corner).
+To translate this into a single number, we can look at the Area Under the Curve (AUC).
+The AUC is 0.982, which is quite high and indicates that the model is able to distinguish between the two classes quite well.
+
+Lastly, let's look at the Precision-Recall curve.
+
 ```{python}
 # Calculate Precision-Recall curve
 precision, recall, _ = precision_recall_curve(y_bin, y_scores)
@@ -775,7 +812,12 @@ plt.tight_layout()
 plt.show()
 ```
 
+The Precision-Recall curve also shows good performance, with high precision and recall values across different thresholds.
+The Average Precision (AP) is 0.992, which is also quite high and indicates that the model is able to maintain high precision while achieving high recall.
+
 ##  Important features
+
+Finally, we will be able to look at the most important features (words) that the model uses to distinguish between the two Testaments.
 
 :::{.panel-tabset}
 ## Plot
@@ -814,7 +856,16 @@ print("\nOld Testament:")
 for i in top_old:
     print(f"{feature_names[i]}: {coef[i]:.4f}")
 ```
-
 :::
+
+As we can see the top three words indicating New Testament are "jesus", "christ" and "faith".
+This is expected as the New Testament focuses on the life and teachings of Jesus Christ and the establishment of Christianity.
+
+On the other hand, the top three words indicating Old Testament are "lord", "the" and "israel".
+Moreover, the feature containg "lord" is bigram containing also "the".
+This is surprising as "the" is a stopword and we would not expect it to be among the most important features, let alone two times.
+
+Another thing to point out is that the weights of the top words for the Old Testament are smaller than those for the New Testament.
+This suggests that the model relies more heavily on specific words to identify New Testament verses, while Old Testament verses are identified by a broader range of words with smaller individual weights.
 
 # Conclusion

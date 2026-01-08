@@ -264,9 +264,65 @@ book_stats
 :::
 
 As we can see from the histogram above, some books have significantly more verses than others.
-For example, Psalms has the highest number of verses, while books like Obadiah and Philemon have very few verses.
+The average number of the verses per book, maximum and minimum number of verses per book are the following:
 
-Another thing that can be observed is that first half of the dataset (that should also correspond to Old Testament) has generally more verses per book compared to the second half (New Testament).
+```{python}
+book_lengths = bible_df.groupby('book').size()
+book_lengths_old = bible_df[bible_df['testament'] == 'Old'].groupby('book').size()
+book_lengths_new = bible_df[bible_df['testament'] == 'New'].groupby('book').size()
+print(f"Average number of verses per book: {book_lengths.mean():.2f} (std: {book_lengths.std():.2f})")
+print(f"Longest book(old): {book_lengths_old.idxmax()} ({book_lengths_old.max()} verses)")
+print(f"Longest book(new): {book_lengths_new.idxmax()} ({book_lengths_new.max()} verses)")
+print(f"Shortest book(old): {book_lengths_old.idxmin()} ({book_lengths_old.min()} verses)")
+print(f"Shortest book(new): {book_lengths_new.idxmin()} ({book_lengths_new.min()} verses)")
+```
+
+We can see that there is quite a big variance in the number of verses per book.
+The longest book (Psalms) belongs to the Old Testament and is more than twice as long as the longest book in the New Testament (Luke).
+Similar trend can be observed for the shortest books as well.
+The shortest book in the Old Testament (Obadiah) nearly has twice as many verses as the shortest book in the New Testament (2 John).
+
+Another thing that can be observed from the histogram above is that first half of the dataset (that corresponds to Old Testament), is not only longer by the number of books, but also by the number of verses per book.
+The of number of verses per Testament is captured in the following chart.
+
+:::{.panel-tabset}
+
+## Plot
+```{python}
+import numpy as np
+
+def label_percentage(pct, allvals):
+    absolute = int(pct / 100. * np.sum(allvals))
+    return f"{pct:.1f}%\n({absolute:d} verses)"
+
+# piechart of number of verses per Testament
+verse_counts = bible_df['testament'].value_counts()
+plt.figure(figsize=(8, 8))
+
+plt.pie(
+    verse_counts.values,
+    labels=verse_counts.index,
+    autopct=lambda pct: label_percentage(pct, verse_counts.values),
+    startangle=140,
+    colors=sns.color_palette("pastel")
+)
+plt.title("Relative number of verses per Testament")
+plt.show()
+```
+## Data
+```{python}
+print("Number of verses per Testament:")
+print(verse_counts)
+```
+:::
+
+As we can see, the Old Testament is nearly three times larger then the New Testament in terms of number of verses.
+Since we are going to classify the verses, we can expect class imbalance issues in the model.
+We should be cautious about accuracy metric as it can be misleading in imbalanced datasets.
+Another thing to look out for is making sure that there is enough representation of the smaller class (New Testament) in both training and test sets.
+This can be achieved by stratified sampling during the train-test split.
+
+
 
 ## Analysis per Testament
 
@@ -290,10 +346,7 @@ def basic_verses_chapters_books_stats(df, testament_name):
     print(f"Number of books in {testament_name}: {df['book'].nunique()}")
     print(f"Number of chapters in {testament_name}: {df.groupby(['book', 'chapter']).ngroups}")
 
-def longest_shortest_books(df, testament_name):
-    book_lengths = df.groupby('book').size()
-    print(f"Longest book in {testament_name}: {book_lengths.idxmax()} ({book_lengths.max()} verses)")
-    print(f"Shortest book in {testament_name}: {book_lengths.idxmin()} ({book_lengths.min()} verses)")
+
 
 def longest_shortest_books_by_words(df, testament_name, stopwords = []):
     new_df = df.copy()
@@ -380,9 +433,6 @@ basic_verses_chapters_books_stats(bible_df, "Bible")
 From the data introduction section we already know these numbers and also we know, that the whole Bible is included in the dataset.
 Let's look at the longest and shortest books by number of verses.
 
-```{python}
-longest_shortest_books(bible_df, "Bible")
-```
 
 The longest book (Book of Psalms) is part of the Old Testament, while the shortest book (2 John) is part of the New Testament.
 Now we will look at the longest and shortest books by number of words.
@@ -493,10 +543,6 @@ basic_verses_chapters_books_stats(old_testament_df, "Old Testament")
 ```
 
 ```{python}
-longest_shortest_books(old_testament_df, "Old Testament")
-```
-
-```{python}
 longest_shortest_books_by_words(old_testament_df, "Old Testament")
 ```
 
@@ -551,10 +597,6 @@ plot_wordcloud(old_testament_df, "Old Testament")
 new_testament_df = bible_df[bible_df["testament"] == "New"]
 
 basic_verses_chapters_books_stats(new_testament_df, "New Testament")
-```
-
-```{python}
-longest_shortest_books(new_testament_df, "New Testament")
 ```
 
 ```{python}
@@ -614,39 +656,8 @@ Here we will compare the two Testaments.
 This is going to help us understand more what can we expect from the modeling part later on.
 Since we are going to try to classify verses into Testaments, let's firstly look what is the size difference between the two Testaments.
 
-:::{.panel-tabset}
 
-## Plot
-```{python}
-import numpy as np
 
-def label_percentage(pct, allvals):
-    absolute = int(pct / 100. * np.sum(allvals))
-    return f"{pct:.1f}%\n({absolute:d} verses)"
-
-# piechart of number of verses per Testament
-verse_counts = bible_df['testament'].value_counts()
-plt.figure(figsize=(8, 8))
-
-plt.pie(
-    verse_counts.values,
-    labels=verse_counts.index,
-    autopct=lambda pct: label_percentage(pct, verse_counts.values),
-    startangle=140,
-    colors=sns.color_palette("pastel")
-)
-plt.title("Relative number of verses per Testament")
-plt.show()
-```
-## Data
-```{python}
-print("Number of verses per Testament:")
-print(verse_counts)
-```
-:::
-
-As we can see, the Old Testament is nearly three times larger then the New Testament in terms of number of verses.
-Since we are going to classify the verses, we should look out for over-fitting towards the Old Testament.
 
 Next, let's look at the average number of words per verse in each Testament.
 

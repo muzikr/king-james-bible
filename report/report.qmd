@@ -46,6 +46,8 @@ But for the sake of simplicity and interpretability we will stick with TF-IDF an
 
 # Data
 
+This section introduces the King James Bible dataset and performs a data quality check to ensure that the dataset is complete and ready for further analysis.
+
 The King James Bible dataset contains full text of the Bible divided into verses.
 The dataset have been provided by our teachers[1] in a simple text format with non-standard delimiters.
 The format (columns) of the dataset is the following: `Book Chapter:Verse    Text`, where:

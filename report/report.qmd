@@ -868,4 +868,20 @@ This is surprising as "the" is a stopword and we would not expect it to be among
 Another thing to point out is that the weights of the top words for the Old Testament are smaller than those for the New Testament.
 This suggests that the model relies more heavily on specific words to identify New Testament verses, while Old Testament verses are identified by a broader range of words with smaller individual weights.
 
-# Conclusion
+# Summary
+
+In this report we have successfully loaded, parsed and cleaned the King James Bible dataset.
+We have performed analysis to understand more about the differences between the Old and New Testaments as well as discoverd potential challenges for the modeling part.
+Finally, we managed to train a classification model that performs quite well in distinguishing between the two Testaments.
+This uncovered the most important words that the model uses for classification and helped us answer our initial question: "What are the main words that differentiate the Old and New Testament?".
+This includes words such as "jesus" and "christ" for the New Testament and "lord" and "israel" for the Old Testament.
+
+
+## Future Steps
+
+To further understand the differences between the Old and New Testaments, future steps could include:
+
+- Experimenting with different classification algorithms and hyperparameter tuning to potentially improve model performance.
+- Analyzing misclassified verses to identify patterns or characteristics that lead to misclassification.
+- Creating specific set of stopwords tailored for biblical text to improve text preprocessing.
+- Try to cluster the verses to see if there are any natural groupings within the Testaments.

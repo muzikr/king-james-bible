@@ -18,9 +18,18 @@ format:
 
 # Introduction
 
-In this project we will explore the Bible, specifically King James Bible, in terms of data analysis.
+In this project we will explore the Bible, specifically King James Bible.
 The main goal is to train a model, that would take an arbitrary verse from the King James Bible and classify it into either Old or New Testament.
-But before we get to the modeling part, we will first explore the data itself and see if there are any interesting patterns or insights that we can find.
+This would help us understand the differences between the two Testaments on a textual level and help us answer the question: "What are the main words that differentiate the Old and New Testament?".
+
+In this report you can find the whole process of data exploration, analysis and modeling.
+In data section we will introduce the dataset in more detail and perform a data quality check.
+Then, we will do some in depth data analysis to understand the structure and distribution of the data, both on a textual and verse level.
+Finally, we will train a classification model, evaluate its performance and look at the most important features.
+
+We will be dealing mainly with text data, thus some text preprocessing will be needed.
+We will be using Python programming language with libraries such as Pandas, Seaborn, Matplotlib and Scikit-learn for data manipulation, visualization and modeling.
+
 
 # Data
 
